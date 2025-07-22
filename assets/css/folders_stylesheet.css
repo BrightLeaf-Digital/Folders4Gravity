@@ -81,3 +81,53 @@ li {
 .drag-handle:active {
     cursor: grabbing;
 }
+
+/* Folder reordering styles */
+.gf-sortable-folders {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.gf-folder-item {
+    font-size: 3em;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #f9f9f9;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background-color 0.2s ease;
+}
+
+.gf-folder-item:hover {
+    background: #f0f0f0;
+}
+
+.gf-folder-item.sortable-ghost {
+    opacity: 0.4;
+}
+
+.gf-drag-handle {
+    cursor: grab;
+    color: #666;
+    font-size: 0.6em;
+    padding: 5px;
+    border-radius: 3px;
+    transition: color 0.2s ease;
+}
+
+.gf-drag-handle:hover {
+    color: #0073aa;
+    background: rgba(0, 115, 170, 0.1);
+}
+
+.gf-drag-handle:active {
+    cursor: grabbing;
+}
+
+.gf-folder-icon {
+    margin-right: 5px;
+}

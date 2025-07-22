@@ -64,6 +64,13 @@ jQuery(($) => {
 		const viewID = $(this).data('view-id');
 		const nonce = $(this).data('nonce');
 
+		// Show confirmation dialog for trash action
+		if (action === 'go_f4g_trash_view') {
+			if (!confirm('Are you sure you want to trash this view? This action can be undone from the Gravity View trash.')) {
+				return;
+			}
+		}
+
 		const urlParams = new URLSearchParams(window.location.search);
 		const folderID = urlParams.get('folder_id'); // could be null
 
@@ -145,6 +152,47 @@ jQuery(($) => {
 						})
 						.fail((xhr, status, error) => {
 							console.error('AJAX error:', error);
+						})
+						.always(() => {
+							$('html, body').css('cursor', 'default');
+						});
+				},
+			});
+		}
+	}
+
+	// Views folder ordering functionality
+	if (typeof FOLDERS4GRAVITY_VIEWS_FOLDER_ORDER !== 'undefined') {
+		const folderList = document.querySelector('.gf-sortable-folders');
+
+		if (folderList) {
+			Sortable.create(folderList, {
+				animation: 150,
+				handle: '.gf-drag-handle',
+				onEnd: () => {
+					const order = Array.from(
+						folderList.querySelectorAll('.gf-folder-item')
+					).map((item) => item.dataset.folderId);
+
+					$('html, body').css('cursor', 'wait');
+					$.post(ajaxurl, {
+						action: 'go_f4g_save_views_folder_order',
+						nonce: FOLDERS4GRAVITY_VIEWS_FOLDER_ORDER.nonce,
+						order,
+					})
+						.done((response) => {
+							if (!response.success) {
+								console.error(
+									'Failed to save views folder order:',
+									response.data || 'Unknown error'
+								);
+							}
+						})
+						.fail((xhr, status, error) => {
+							console.error(
+								'AJAX error while saving views folder order:',
+								error
+							);
 						})
 						.always(() => {
 							$('html, body').css('cursor', 'default');

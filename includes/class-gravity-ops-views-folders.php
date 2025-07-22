@@ -128,6 +128,7 @@ class Gravity_Ops_Views_Folders extends GFAddOn {
 		add_action( "wp_ajax_{$this->prefix}clone_view", [ $this, 'handle_clone_view' ] );
 		add_action( "wp_ajax_{$this->prefix}trash_view", [ $this, 'handle_trash_view' ] );
         add_action( "wp_ajax_{$this->prefix}save_view_order", [ $this, 'handle_save_view_order' ] );
+        add_action( "wp_ajax_{$this->prefix}save_views_folder_order", [ $this, 'ajax_save_views_folder_order' ] );
 	}
 
 	/**
@@ -160,13 +161,7 @@ class Gravity_Ops_Views_Folders extends GFAddOn {
      * @return void
      */
     public function dashboard_widget() {
-
-        $views             = get_terms(
-                [
-                    'taxonomy'   => $this->taxonomy_name,
-					'hide_empty' => false,
-				]
-		);
+        $views             = $this->get_ordered_folders();
         $view_folder_nonce = wp_create_nonce( 'view_folder' );
         ?>
         <div class="views">
@@ -458,6 +453,75 @@ class Gravity_Ops_Views_Folders extends GFAddOn {
 		wp_send_json_success( [ 'message' => 'View order saved successfully.' ] );
 	}
 
+	/**
+	 * Saves the views folder order via an AJAX request.
+	 *
+	 * @return void
+	 */
+	public function ajax_save_views_folder_order() {
+		// Security check
+		if ( ! current_user_can( 'edit_gravityviews' ) || ! check_ajax_referer( 'save_views_folder_order', 'nonce', false ) ) {
+			wp_send_json_error( [ 'message' => 'Unauthorized' ], 403 );
+		}
+
+		// Validate and sanitize inputs
+		$order = isset( $_POST['order'] ) ? array_map( 'absint', (array) $_POST['order'] ) : [];
+
+		if ( empty( $order ) ) {
+			wp_send_json_error( [ 'message' => 'Missing folder order' ], 400 );
+		}
+
+		update_option( "{$this->prefix}views_folder_order", $order );
+
+		wp_send_json_success( [ 'message' => 'Views folder order saved.' ] );
+	}
+
+	/**
+	 * Gets views folders in the custom order if set, otherwise returns default order.
+	 *
+	 * @return array Array of folder term objects in the correct order.
+	 */
+	private function get_ordered_folders() {
+		$folders = get_terms(
+			[
+				'taxonomy'   => $this->taxonomy_name,
+				'hide_empty' => false,
+			]
+		);
+
+		if ( empty( $folders ) || is_wp_error( $folders ) ) {
+			return [];
+		}
+
+		// Get the custom folder order
+		$folder_order = get_option( "{$this->prefix}views_folder_order", [] );
+
+		if ( empty( $folder_order ) ) {
+			return $folders;
+		}
+
+		// Create a map of folder ID to folder object
+		$folder_map = [];
+		foreach ( $folders as $folder ) {
+			$folder_map[ $folder->term_id ] = $folder;
+		}
+
+		// Build ordered array based on saved order
+		$ordered_folders = [];
+		foreach ( $folder_order as $folder_id ) {
+			if ( isset( $folder_map[ $folder_id ] ) ) {
+				$ordered_folders[] = $folder_map[ $folder_id ];
+				unset( $folder_map[ $folder_id ] );
+			}
+		}
+
+		// Add any remaining folders that weren't in the saved order
+		foreach ( $folder_map as $folder ) {
+			$ordered_folders[] = $folder;
+		}
+
+		return $ordered_folders;
+	}
 
 	/**
 	 * Deletes all plugin created data during uninstall
@@ -525,14 +589,14 @@ class Gravity_Ops_Views_Folders extends GFAddOn {
 				'handle'    => 'view-folders-scripts',
 				'src'       => plugins_url( 'assets/js/views_folders_script.js', FOLDERS_4_GRAVITY_BASENAME ),
 				'version'   => '1.0.0',
-				'deps'      => [ 'jquery', 'sortable4folders' ],
+				'deps'      => [ 'jquery', 'sortable4views' ],
 				'in_footer' => true,
 				'enqueue'   => [
 					[ 'query' => 'page=' . $this->_slug ],
 				],
 			],
 			[
-				'handle'    => 'sortable4folders',
+				'handle'    => 'sortable4views',
 				'src'       => plugins_url( 'assets/js/Sortable.min.js', FOLDERS_4_GRAVITY_BASENAME ),
 				'version'   => '1.15.6',
 				'in_footer' => true,
@@ -912,29 +976,26 @@ class Gravity_Ops_Views_Folders extends GFAddOn {
 	 * @return void
 	 */
 	private function render_view_folders_page() {
-		$create_folder_nonce = wp_create_nonce( 'create_view_folder' );
-		$assign_view_nonce   = wp_create_nonce( 'assign_view' );
-		$view_folder_nonce   = wp_create_nonce( 'view_folder' );
-		$delete_folder_nonce = wp_create_nonce( 'delete_view_folder' );
-		$folders             = get_terms(
-			[
-				'taxonomy'   => $this->taxonomy_name,
-				'hide_empty' => false,
-			]
-		);
+		$create_folder_nonce           = wp_create_nonce( 'create_view_folder' );
+		$assign_view_nonce             = wp_create_nonce( 'assign_view' );
+		$view_folder_nonce             = wp_create_nonce( 'view_folder' );
+		$delete_folder_nonce           = wp_create_nonce( 'delete_view_folder' );
+		$save_views_folder_order_nonce = wp_create_nonce( 'save_views_folder_order' );
+		$folders                       = $this->get_ordered_folders();
 		?>
 			<div class="wrap">
 				<h1>View Folders</h1>
 				<br>
-				<ul>
+				<ul class="gf-sortable-folders">
 					<?php
 					foreach ( $folders as $folder ) {
 						$view_count  = count( get_objects_in_term( $folder->term_id, $this->taxonomy_name ) );
 						$folder_link = admin_url( 'admin.php?page=' . $this->_slug . '&folder_id=' . $folder->term_id . '&view_folder_nonce=' . $view_folder_nonce );
 						?>
-						<li class="folder-item">
+						<li class="gf-folder-item" data-folder-id="<?php echo esc_attr( $folder->term_id ); ?>">
+							<span class="gf-drag-handle dashicons dashicons-menu" title="Drag to reorder"></span>
 							<a href="<?php echo esc_url( $folder_link ); ?>">
-								<span class="dashicons dashicons-category folder-icon"></span> <?php echo esc_html( $folder->name ); ?> (<?php echo esc_html( $view_count ); ?>)
+								<span class="dashicons dashicons-category gf-folder-icon"></span> <?php echo esc_html( $folder->name ); ?> (<?php echo esc_html( $view_count ); ?>)
 							</a>
 							<?php
 							if ( ! $view_count ) {
@@ -945,11 +1006,15 @@ class Gravity_Ops_Views_Folders extends GFAddOn {
 							}
 							?>
 						</li>
-						<br><br>
 						<?php
 					}
 					?>
 				</ul>
+				<script type="text/javascript">
+					const FOLDERS4GRAVITY_VIEWS_FOLDER_ORDER = {
+						nonce: '<?php echo esc_js( $save_views_folder_order_nonce ); ?>'
+					};
+				</script>
 
 				<div class="folder-forms">
 					<div class="folder-forms-item">

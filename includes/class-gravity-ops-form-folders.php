@@ -125,6 +125,7 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
         add_action( "wp_ajax_{$this->prefix}duplicate_form", [ $this, 'handle_duplicate_form' ] );
         add_action( "wp_ajax_{$this->prefix}trash_form", [ $this, 'handle_trash_form' ] );
         add_action( "wp_ajax_{$this->prefix}save_form_order", [ $this, 'ajax_save_form_order' ] );
+        add_action( "wp_ajax_{$this->prefix}save_folder_order", [ $this, 'ajax_save_folder_order' ] );
 	}
 
 	/**
@@ -157,12 +158,7 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
      * @return void
      */
     public function dashboard_widget() {
-        $folders = get_terms(
-            [
-				'taxonomy'   => "$this->taxonomy_name",
-				'hide_empty' => false,
-			]
-        );
+        $folders = $this->get_ordered_folders();
 
         $view_folder_nonce = wp_create_nonce( 'view_folder' );
 
@@ -508,7 +504,7 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
      *
      * @return void
      */
-    public function ajax_save_form_order() {
+   	public function ajax_save_form_order() {
 		// Security check
 		if ( ! current_user_can( 'gform_full_access' ) || ! check_ajax_referer( 'save_form_order', 'nonce', false ) ) {
 			wp_send_json_error( [ 'message' => 'Unauthorized' ], 403 );
@@ -525,6 +521,76 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
 		update_term_meta( $folder_id, "{$this->prefix}form_order", $order );
 
 		wp_send_json_success( [ 'message' => 'Form order saved.' ] );
+	}
+
+	/**
+	 * Saves the folder order via an AJAX request.
+	 *
+	 * @return void
+	 */
+	public function ajax_save_folder_order() {
+		// Security check
+		if ( ! current_user_can( 'gform_full_access' ) || ! check_ajax_referer( 'save_folder_order', 'nonce', false ) ) {
+			wp_send_json_error( [ 'message' => 'Unauthorized' ], 403 );
+		}
+
+		// Validate and sanitize inputs
+		$order = isset( $_POST['order'] ) ? array_map( 'absint', (array) $_POST['order'] ) : [];
+
+		if ( empty( $order ) ) {
+			wp_send_json_error( [ 'message' => 'Missing folder order' ], 400 );
+		}
+
+		update_option( "{$this->prefix}folder_order", $order );
+
+		wp_send_json_success( [ 'message' => 'Folder order saved.' ] );
+	}
+
+	/**
+	 * Gets folders in the custom order if set, otherwise returns default order.
+	 *
+	 * @return array Array of folder term objects in the correct order.
+	 */
+	private function get_ordered_folders() {
+		$folders = get_terms(
+			[
+				'taxonomy'   => $this->taxonomy_name,
+				'hide_empty' => false,
+			]
+		);
+
+		if ( empty( $folders ) || is_wp_error( $folders ) ) {
+			return [];
+		}
+
+		// Get the custom folder order
+		$folder_order = get_option( "{$this->prefix}folder_order", [] );
+
+		if ( empty( $folder_order ) ) {
+			return $folders;
+		}
+
+		// Create a map of folder ID to folder object
+		$folder_map = [];
+		foreach ( $folders as $folder ) {
+			$folder_map[ $folder->term_id ] = $folder;
+		}
+
+		// Build ordered array based on saved order
+		$ordered_folders = [];
+		foreach ( $folder_order as $folder_id ) {
+			if ( isset( $folder_map[ $folder_id ] ) ) {
+				$ordered_folders[] = $folder_map[ $folder_id ];
+				unset( $folder_map[ $folder_id ] );
+			}
+		}
+
+		// Add any remaining folders that weren't in the saved order
+		foreach ( $folder_map as $folder ) {
+			$ordered_folders[] = $folder;
+		}
+
+		return $ordered_folders;
 	}
 
 
@@ -829,27 +895,24 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
         $assign_form_nonce   = wp_create_nonce( 'assign_form' );
         $view_folder_nonce   = wp_create_nonce( 'view_folder' );
         $delete_folder_nonce = wp_create_nonce( 'delete_folder' );
-        $folders             = get_terms(
-						            [
-							            'taxonomy'   => $this->taxonomy_name,
-							            'hide_empty' => false,
-						            ]
-					            );
+        $save_folder_order_nonce = wp_create_nonce( 'save_folder_order' );
+        $folders             = $this->get_ordered_folders();
 
 		?>
 			<div class="wrap">
 				<h1>Form Folders</h1>
 				<br>
-				<ul>
+				<ul class="gf-sortable-folders">
 					<?php
 
 					foreach ( $folders as $folder ) {
 						$form_count  = count( get_objects_in_term( $folder->term_id, $this->taxonomy_name ) );
                         $folder_link = admin_url( 'admin.php?page=' . $this->_slug . '&folder_id=' . $folder->term_id . '&view_folder_nonce=' . $view_folder_nonce );
                         ?>
-                        <li class="folder-item">
+                        <li class="gf-folder-item" data-folder-id="<?php echo esc_attr( $folder->term_id ); ?>">
+                            <span class="gf-drag-handle dashicons dashicons-menu" title="Drag to reorder"></span>
                             <a href="<?php echo esc_url( $folder_link ); ?>">
-                                <span class="dashicons dashicons-category folder-icon"></span> <?php echo esc_html( $folder->name ); ?> (<?php echo esc_html( $form_count ); ?>)
+                                <span class="dashicons dashicons-category gf-folder-icon"></span> <?php echo esc_html( $folder->name ); ?> (<?php echo esc_html( $form_count ); ?>)
                             </a>
                         <?php
 						if ( ! $form_count ) {
@@ -860,11 +923,15 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
 						}
                         ?>
                         </li>
-					    <br><br>
 						<?php
 					}
 					?>
 				</ul>
+				<script type="text/javascript">
+					const FOLDERS4GRAVITY_FOLDER_ORDER = {
+						nonce: '<?php echo esc_js( $save_folder_order_nonce ); ?>'
+					};
+				</script>
 
 				<div class="folder-forms">
 					<div class="folder-forms-item">

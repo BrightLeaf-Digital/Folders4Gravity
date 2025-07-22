@@ -64,6 +64,13 @@ jQuery(($) => {
 		const formID = $(this).data('form-id');
 		const nonce = $(this).data('nonce');
 
+		// Show confirmation dialog for trash action
+		if (action === 'go_f4g_trash_form') {
+			if (!confirm('Are you sure you want to trash this form? This action can be undone from the Gravity Forms trash.')) {
+				return;
+			}
+		}
+
 		const urlParams = new URLSearchParams(window.location.search);
 		const folderID = urlParams.get('folder_id'); // could be null
 
@@ -144,6 +151,47 @@ jQuery(($) => {
 						.fail((xhr, status, error) => {
 							console.error(
 								'AJAX error while saving order:',
+								error
+							);
+						})
+						.always(() => {
+							$('html, body').css('cursor', 'default');
+						});
+				},
+			});
+		}
+	}
+
+	// Folder ordering functionality
+	if (typeof FOLDERS4GRAVITY_FOLDER_ORDER !== 'undefined') {
+		const folderList = document.querySelector('.gf-sortable-folders');
+
+		if (folderList) {
+			Sortable.create(folderList, {
+				animation: 150,
+				handle: '.gf-drag-handle',
+				onEnd: () => {
+					const order = Array.from(
+						folderList.querySelectorAll('.gf-folder-item')
+					).map((item) => item.dataset.folderId);
+
+					$('html, body').css('cursor', 'wait');
+					$.post(ajaxurl, {
+						action: 'go_f4g_save_folder_order',
+						nonce: FOLDERS4GRAVITY_FOLDER_ORDER.nonce,
+						order,
+					})
+						.done((response) => {
+							if (!response.success) {
+								console.error(
+									'Failed to save folder order:',
+									response.data || 'Unknown error'
+								);
+							}
+						})
+						.fail((xhr, status, error) => {
+							console.error(
+								'AJAX error while saving folder order:',
 								error
 							);
 						})
