@@ -1,7 +1,7 @@
 === Folders4Gravity ===
 Tested up to: 6.8
 Tags: GravityForms, gravityview, folders, organization, management
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 Requires PHP: 8.0
 License: GPL-2.0+
 Contributors: eitanatbrightleaf
@@ -58,6 +58,10 @@ If you deactivate the plugin, your folders will no longer be visible, but they w
 If you uninstall the plugin, all folder data will be removed from the database.
 
 == Changelog ==
+
+= 1.0.3 =
+* Added confirmation before trashing form or view
+* Made folders re-organizable
 
 = 1.0.2 =
 * Split Forms and Views dashboard widgets
