@@ -1043,92 +1043,85 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
         $plugin_page_url = get_admin_url() . 'admin.php?page=' . $this->_slug;
 
 		?>
-            <div class='wrap fs-section fs-full-size-wrapper'>
-                <h2 class='nav-tab-wrapper' style="display: none;">
-                    <a href='<?php echo esc_url( $plugin_page_url ); ?>' class='nav-tab fs-tab nav-tab-active home'>
-                        Form Folders
-                    </a>
-                </h2>
-			    <div class="wrap">
-				<h1>Form Folders</h1>
-				<br>
-				<ul class="gf-sortable-folders">
-					<?php
+        <div class="wrap">
+            <h1>Form Folders</h1>
+            <br>
+            <ul class="gf-sortable-folders">
+                <?php
 
-					foreach ( $folders as $folder ) {
-						$form_count  = count( get_objects_in_term( $folder->term_id, $this->taxonomy_name ) );
-                        $folder_link = admin_url( 'admin.php?page=' . $this->_slug . '&folder_id=' . $folder->term_id . '&view_folder_nonce=' . $view_folder_nonce );
-                        ?>
-                        <li class="gf-folder-item" data-folder-id="<?php echo esc_attr( $folder->term_id ); ?>">
-                            <span class="gf-drag-handle dashicons dashicons-menu" title="Drag to reorder"></span>
-                            <a href="<?php echo esc_url( $folder_link ); ?>">
-                                <span class="dashicons dashicons-category gf-folder-icon"></span> <?php echo esc_html( $folder->name ); ?> (<?php echo esc_html( $form_count ); ?>)
-                            </a>
+                foreach ( $folders as $folder ) {
+                    $form_count  = count( get_objects_in_term( $folder->term_id, $this->taxonomy_name ) );
+                    $folder_link = admin_url( 'admin.php?page=' . $this->_slug . '&folder_id=' . $folder->term_id . '&view_folder_nonce=' . $view_folder_nonce );
+                    ?>
+                    <li class="gf-folder-item" data-folder-id="<?php echo esc_attr( $folder->term_id ); ?>">
+                        <span class="gf-drag-handle dashicons dashicons-menu" title="Drag to reorder"></span>
+                        <a href="<?php echo esc_url( $folder_link ); ?>">
+                            <span class="dashicons dashicons-category gf-folder-icon"></span> <?php echo esc_html( $folder->name ); ?> (<?php echo esc_html( $form_count ); ?>)
+                        </a>
                         <?php
-						if ( ! $form_count ) {
+                        if ( ! $form_count ) {
                             ?>
-							&nbsp;&nbsp;
-							<button class="button delete-folder-button" data-folder-id="<?php echo esc_attr( $folder->term_id ); ?>" data-nonce="<?php echo esc_attr( $delete_folder_nonce ); ?>">Delete Folder</button>
-							<?php
-						}
+                            &nbsp;&nbsp;
+                            <button class="button delete-folder-button" data-folder-id="<?php echo esc_attr( $folder->term_id ); ?>" data-nonce="<?php echo esc_attr( $delete_folder_nonce ); ?>">Delete Folder</button>
+                            <?php
+                        }
                         ?>
-                        </li>
-						<?php
-					}
-					?>
-				</ul>
-				<script type="text/javascript">
-					const FOLDERS4GRAVITY_FOLDER_ORDER = {
-						nonce: '<?php echo esc_js( $save_folder_order_nonce ); ?>'
-					};
-				</script>
+                    </li>
+                    <?php
+                }
+                ?>
+            </ul>
+            <script type="text/javascript">
+                const FOLDERS4GRAVITY_FOLDER_ORDER = {
+                    nonce: '<?php echo esc_js( $save_folder_order_nonce ); ?>'
+                };
+            </script>
 
-				<div class="folder-forms">
-					<div class="folder-forms-item">
-						<form id="create-folder-form">
-						    <label for="folder_name" class="form-field-label">Create A New Folder</label><br>
-							<input type="text" id="folder_name" name="folder_name" placeholder="Folder Name" required>
-							<input type="hidden" name="nonce" value="<?php echo esc_attr( $create_folder_nonce ); ?>">
-							<button type="submit" class="button">Create Folder</button>
-						</form>
-					</div>
+            <div class="folder-forms">
+                <div class="folder-forms-item">
+                    <form id="create-folder-form">
+                        <label for="folder_name" class="form-field-label">Create A New Folder</label><br>
+                        <input type="text" id="folder_name" name="folder_name" placeholder="Folder Name" required>
+                        <input type="hidden" name="nonce" value="<?php echo esc_attr( $create_folder_nonce ); ?>">
+                        <button type="submit" class="button">Create Folder</button>
+                    </form>
+                </div>
 
-					<div class="folder-forms-item">
-					    <label for="assign-forms-form" class="form-field-label">Assign Form(s) to a Folder</label>
-						<form id="assign-forms-form">
-							<label for="form_id" class="form-field-sub-label">Select Form(s) to Assign</label><br>
-							<select id="form_id" name="form_ids[]" required multiple size="8">
-								<?php
-								$all_forms = GFAPI::get_forms();
-								foreach ( $all_forms as $form ) {
-									$assigned_folders = wp_get_object_terms( $form['id'], $this->taxonomy_name, [ 'fields' => 'ids' ] );
-									if ( empty( $assigned_folders ) ) {
-                                        ?>
-										<option value="<?php echo esc_attr( $form['id'] ); ?>"><?php echo esc_html( $form['title'] ); ?></option>
-										<?php
-									}
-								}
-								?>
-							</select>
-							<br><br>
-							<label for="folder_id" class="form-field-sub-label">Select a Folder to Assign To</label><br>
-							<select id="folder_id" name="folder_id" required>
-								<option value="">Select a Folder</option>
-								<?php
-								foreach ( $folders as $folder ) {
+                <div class="folder-forms-item">
+                    <label for="assign-forms-form" class="form-field-label">Assign Form(s) to a Folder</label>
+                    <form id="assign-forms-form">
+                        <label for="form_id" class="form-field-sub-label">Select Form(s) to Assign</label><br>
+                        <select id="form_id" name="form_ids[]" required multiple size="8">
+                            <?php
+                            $all_forms = GFAPI::get_forms();
+                            foreach ( $all_forms as $form ) {
+                                $assigned_folders = wp_get_object_terms( $form['id'], $this->taxonomy_name, [ 'fields' => 'ids' ] );
+                                if ( empty( $assigned_folders ) ) {
                                     ?>
-									<option value="<?php echo esc_attr( $folder->term_id ); ?>"><?php echo esc_html( $folder->name ); ?></option>
-									<?php
-								}
-								?>
-							</select>
-							<input type="hidden" name="nonce" value="<?php echo esc_attr( $assign_form_nonce ); ?>">
-							<button type="submit" class="button">Assign Form(s)</button>
-						</form>
-					</div>
-				</div>
-			</div>
+                                    <option value="<?php echo esc_attr( $form['id'] ); ?>"><?php echo esc_html( $form['title'] ); ?></option>
+                                    <?php
+                                }
+                            }
+                            ?>
+                        </select>
+                        <br><br>
+                        <label for="folder_id" class="form-field-sub-label">Select a Folder to Assign To</label><br>
+                        <select id="folder_id" name="folder_id" required>
+                            <option value="">Select a Folder</option>
+                            <?php
+                            foreach ( $folders as $folder ) {
+                                ?>
+                                <option value="<?php echo esc_attr( $folder->term_id ); ?>"><?php echo esc_html( $folder->name ); ?></option>
+                                <?php
+                            }
+                            ?>
+                        </select>
+                        <input type="hidden" name="nonce" value="<?php echo esc_attr( $assign_form_nonce ); ?>">
+                        <button type="submit" class="button">Assign Form(s)</button>
+                    </form>
+                </div>
             </div>
+        </div>
 		<?php
 	}
 	/**
