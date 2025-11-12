@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: Folders4Gravity
- * Plugin URI: https://digital.brightleaf.info/Folders4Gravity/
- * Author URI: https://digital.brightleaf.info/
+ * Plugin URI: https://brightleafdigital.io/folders-4-gravity/
+ * Author URI: https://brightleafdigital.io/
  * Description: Organize your Gravity Forms and Gravity Views by folders.
  * Version: 1.0.3
  * Author: BrightLeaf Digital
