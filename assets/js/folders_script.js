@@ -1,4 +1,5 @@
 jQuery(($) => {
+	$('h2.nav-tab-wrapper').show();
 	const makeAjaxRequest = function (body) {
 		$('html, body').css('cursor', 'wait');
 		$.post(ajaxurl, body)
