@@ -1,10 +1,10 @@
 <?php
 /**
- * Plugin Name: Folders4Gravity
+ * Plugin Name: Folders4Gravity - Folders for Gravity Forms and GravityView
  * Plugin URI: https://brightleafdigital.io/folders-4-gravity/
  * Author URI: https://brightleafdigital.io/
  * Description: Organize your Gravity Forms and Gravity Views by folders.
- * Version: 1.0.3
+ * Version: 1.0.4
  * Author: BrightLeaf Digital
  * License: GPL-2.0+
  * Requires PHP: 8.0
@@ -44,7 +44,7 @@ add_action(
 	}
 );
 
-define( 'FOLDERS_4_GRAVITY_VERSION', '1.0.3' );
+define( 'FOLDERS_4_GRAVITY_VERSION', '1.0.4' );
 define( 'FOLDERS_4_GRAVITY_BASENAME', plugin_basename( __FILE__ ) );
 
 /**

@@ -3,7 +3,7 @@ Contributors: eitanatbrightleaf
 Tags: gravity forms, folders, admin tools, organization, gravityview
 Requires at least: 6.5
 Tested up to: 6.8
-Stable tag: 1.0.3
+Stable tag: 1.0.4
 Requires PHP: 8.0
 License: GPLv2
 License URI: https://brightleafdigital.io/folders-4-gravity/
@@ -153,6 +153,11 @@ Yes. Folders4Gravity is intentionally lightweight, fast, and optimized for large
 3. Inside a View Folder, displaying GravityView Views grouped by project or workflow with full folder navigation controls.
 
 == Changelog ==
+
+### 1.0.4
+- Updated plugin name
+- Updated readme
+
 ### 1.0.3
 - Added confirmation before trashing a form or view.
 - Enabled re-organization of folders.
