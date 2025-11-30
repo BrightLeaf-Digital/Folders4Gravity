@@ -73,6 +73,10 @@ jobs:
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
           VERSION: ${{ needs.get_version.outputs.version }}
 
-
-
-
+      - name: Notify Update Feed
+        if: success()
+        run: |
+          curl -X POST ${{ secrets.UPDATE_FEED_URL }} \
+            -H "X-API-Key: ${{ secrets.BLD_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{"item_updated": "f4g", "version": "${{ needs.get_version.outputs.version }}"}'
