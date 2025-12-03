@@ -1,5 +1,6 @@
 <?php
 
+use F4G\GravityOps\Core\Utils\AssetHelper;
 use GV\View;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -91,6 +92,13 @@ class Gravity_Ops_Views_Folders extends GFAddOn {
      */
     private $forms_taxonomy_name = 'go_f4g_form_folders';
 
+    /**
+     * Stores the instance of the AssetHelper class.
+     *
+     * @var AssetHelper
+     */
+    private AssetHelper $assets_helper;
+
 	/**
 	 * Initializes the class by adding necessary filters.
 	 *
@@ -99,6 +107,8 @@ class Gravity_Ops_Views_Folders extends GFAddOn {
 	public function init() {
 		parent::init();
 		$this->register_views_folders_taxonomy();
+
+        $this->assets_helper = new AssetHelper( plugins_url( '/', FOLDERS_4_GRAVITY_BASENAME ), dirname( __DIR__ ) );
 
 		add_action( "wp_ajax_{$this->prefix}create_view_folder", [ $this, 'handle_create_folder' ] );
 		add_action( "wp_ajax_{$this->prefix}assign_views_to_folder", [ $this, 'handle_assign_views_to_folder' ] );
@@ -546,14 +556,11 @@ class Gravity_Ops_Views_Folders extends GFAddOn {
 	 */
 	public function styles() {
 		$styles = [
-			[
-				'handle'  => 'view-folders-styles',
-				'src'     => plugins_url( 'assets/css/folders_stylesheet.css', FOLDERS_4_GRAVITY_BASENAME ),
-				'version' => '1.0.0',
-				'enqueue' => [
-					[ 'query' => 'page=' . $this->_slug ],
-				],
-			],
+			$this->assets_helper->build_style(
+					'view-folders-styles',
+					'assets/css/folders_stylesheet.css',
+					[ [ 'query' => 'page=' . $this->_slug ] ],
+			),
 		];
 		return array_merge( parent::styles(), $styles );
 	}
@@ -565,25 +572,18 @@ class Gravity_Ops_Views_Folders extends GFAddOn {
 	 */
 	public function scripts() {
 		$scripts = [
-			[
-				'handle'    => 'view-folders-scripts',
-				'src'       => plugins_url( 'assets/js/views_folders_script.js', FOLDERS_4_GRAVITY_BASENAME ),
-				'version'   => '1.0.0',
-				'deps'      => [ 'jquery', 'sortable4views' ],
-				'in_footer' => true,
-				'enqueue'   => [
-					[ 'query' => 'page=' . $this->_slug ],
-				],
-			],
-			[
-				'handle'    => 'sortable4views',
-				'src'       => plugins_url( 'assets/js/Sortable.min.js', FOLDERS_4_GRAVITY_BASENAME ),
-				'version'   => '1.15.6',
-				'in_footer' => true,
-				'enqueue'   => [
-					[ 'query' => 'page=' . $this->_slug ],
-				],
-			],
+			$this->assets_helper->build_script(
+					'view-folders-scripts',
+					'assets/js/views_folders_script.js',
+					[ 'jquery', 'sortable4views' ],
+					[ [ 'query' => 'page=' . $this->_slug ] ]
+			),
+			$this->assets_helper->build_script(
+					'sortable4views',
+					'assets/js/Sortable.min.js',
+					[],
+					[ [ 'query' => 'page=' . $this->_slug ] ]
+			),
 		];
 		return array_merge( parent::scripts(), $scripts );
 	}
