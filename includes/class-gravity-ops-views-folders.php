@@ -66,13 +66,10 @@ class Gravity_Ops_Views_Folders extends GFAddOn {
 	 * @var string
 	 */
 	protected $_capabilities_uninstall = 'go_folders_4_gravity_uninstall';
-	/**
-	 * Holds the singleton instance of the class.
-	 *
-	 * @var self|null
-	 */
-	private static ?self $_instance = null;
+
 	// phpcs:enable PSR2.Classes.PropertyDeclaration.Underscore
+
+	use F4G\GravityOps\Core\Traits\SingletonTrait;
 
 	/**
 	 * The prefix to be used by the plugin. Gravity Ops-Folders4Gravity
@@ -81,11 +78,11 @@ class Gravity_Ops_Views_Folders extends GFAddOn {
 	 */
 	private $prefix = 'go_f4g_';
 
-        /**
-         * Stores the name of the custom taxonomy.
-         *
-         * @var string
-         */
+	/**
+     * Stores the name of the custom taxonomy.
+     *
+     * @var string
+     */
     private $taxonomy_name = 'go_f4g_gv_view_folders';
     /**
      * Stores the taxonomy name for viewing folders.
@@ -93,23 +90,6 @@ class Gravity_Ops_Views_Folders extends GFAddOn {
      * @var string
      */
     private $forms_taxonomy_name = 'go_f4g_form_folders';
-
-	/**
-	 * Returns the singleton instance of this class.
-	 *
-	 * This method ensures that only one instance of the class is created.
-	 * If the instance does not yet exist, it is created; otherwise,
-	 * the existing instance is returned.
-	 *
-	 * @return self|null The singleton instance of the class.
-	 */
-	public static function get_instance(): ?self {
-		if ( is_null( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
 
 	/**
 	 * Initializes the class by adding necessary filters.

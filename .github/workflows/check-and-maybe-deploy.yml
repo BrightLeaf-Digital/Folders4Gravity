@@ -21,6 +21,15 @@ jobs:
           php-version: '8.3'
           tools: composer
 
+      - name: Setup SSH Agent
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+            ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY_GRAVITYOPS_CORE }}
+
+      # This ensures the shared library classes are available for the PCP check
+      - name: Install dependencies
+        run: composer install --no-dev --no-progress --optimize-autoloader
+
       # Run PCP check
       - name: PCP
         uses: wordpress/plugin-check-action@v1
@@ -65,6 +74,31 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      # --- ADDED: Setup PHP for this job too ---
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.0'
+          tools: composer
+
+      # --- ADDED: Setup SSH Agent ---
+      - name: Setup SSH Agent
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+            ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY_GRAVITYOPS_CORE }}
+
+      # We install before the 10up action so the 'vendor' folder is populated with the private lib
+      - name: Install dependencies
+        run: composer install --no-dev --no-progress --optimize-autoloader
+
+      # Create a clean build directory.
+      # This preserves the 'vendor' folder we just built with the SSH key.
+      - name: Prepare Build Directory
+        run: |
+          mkdir svn-build
+          rsync -av --exclude='.git' --exclude='vendor' --exclude='.github' --exclude='svn-build' --exclude='composer.json' --exclude='composer.lock' --exclude='.gitignore' . svn-build/
+
       - name: WordPress Plugin Deploy
         uses: 10up/action-wordpress-plugin-deploy@stable
         env:
@@ -72,6 +106,7 @@ jobs:
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
           VERSION: ${{ needs.get_version.outputs.version }}
+          BUILD_DIR: svn-build
 
       - name: Notify Update Feed
         if: success()

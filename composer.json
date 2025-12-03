@@ -1,0 +1,44 @@
+{
+  "name": "gravityops/folders",
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "git@github.com:Eitan-brightleaf/gravityops.git",
+      "no-api": true
+    }
+  ],
+  "require": {
+    "gravityops/core": "dev-main"
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "extra": {
+    "strauss": {
+      "namespace_prefix": "F4G\\",
+      "classmap_prefix": "F4G_",
+      "constant_prefix": "F4G_",
+      "exclude_from_copy": {
+        "file_patterns": [
+          "(^|/)\\.git(/|$)",
+          "(^|/)\\.github(/|$)",
+          "\\.git(ignore|modules|attributes)$"
+        ]
+      }
+    }
+  },
+  "scripts": {
+    "prefix-namespaces": [
+      "@php -r \"if (!file_exists('bin')) { mkdir('bin', 0755, true); }\"",
+      "@php -r \"if (!file_exists('bin/strauss.phar')) { file_put_contents('bin/strauss.phar', file_get_contents('https://github.com/BrianHenryIE/strauss/releases/latest/download/strauss.phar')); }\"",
+      "@php bin/strauss.phar",
+      "@php -r \"unlink('bin/strauss.phar');\"",
+      "@php -r \"if (is_dir('bin')) rmdir('bin');\""
+    ],
+    "post-install-cmd": [
+      "@prefix-namespaces"
+    ],
+    "post-update-cmd": [
+      "@prefix-namespaces"
+    ]
+  }
+}

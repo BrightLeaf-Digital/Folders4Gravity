@@ -14,6 +14,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+require_once __DIR__ . '/vendor-prefixed/autoload.php';
+
 
 if ( function_exists( 'register_form_folders_submenu' ) ) {
 	add_action(
