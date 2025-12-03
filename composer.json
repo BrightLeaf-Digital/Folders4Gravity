@@ -26,6 +26,12 @@
       }
     }
   },
+  "config": {
+    "preferred-install": {
+      "gravityops/core": "source",
+      "*": "dist"
+    }
+  },
   "scripts": {
     "prefix-namespaces": [
       "@php -r \"if (!file_exists('bin')) { mkdir('bin', 0755, true); }\"",

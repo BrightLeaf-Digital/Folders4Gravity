@@ -81,6 +81,13 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
 	private $prefix = 'go_f4g_';
 
     /**
+     * Utility for managing and loading assets.
+     *
+     * @var Assets
+     */
+    private $assets_helper;
+
+    /**
      * Stores the name of the custom taxonomy.
      *
      * @var string
@@ -99,6 +106,9 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
 	 * @return void
 	 */
 	public function init() {
+
+        $this->assets_helper = new Assets( plugins_url( '/', FOLDERS_4_GRAVITY_BASENAME ), dirname( __DIR__ ) );
+
 		parent::init();
 		$this->register_form_folders_taxonomy();
 
@@ -636,19 +646,16 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
 	 * @return array
 	 */
 	public function styles() {
-        $url = plugins_url( '', FOLDERS_4_GRAVITY_BASENAME );
 
         $styles = [
-			Assets::build_style(
+			$this->assets_helper->build_style(
 					'form-folders-styles',
-					$url . '/assets/css/folders_stylesheet.css',
-					dirname( __DIR__ ) . '/assets/css/folders_stylesheet.css',
+					'/assets/css/folders_stylesheet.css',
 					[ [ 'query' => 'page=' . $this->_slug ] ]
 			),
-			Assets::build_style(
+			$this->assets_helper->build_style(
 					'folders4formswidget',
-					$url . '/assets/css/dashboard-widget.css',
-					dirname( __DIR__ ) . '/assets/css/dashboard-widget.css',
+					'/assets/css/dashboard-widget.css',
 					[
 						function () {
                             $s = get_current_screen();
@@ -667,20 +674,16 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
      */
     public function scripts() {
 
-        $url = plugins_url( '', FOLDERS_4_GRAVITY_BASENAME );
-
         $scripts = [
-			Assets::build_script(
+			$this->assets_helper->build_script(
 					'form-folders-scripts',
-					$url . '/assets/js/folders_script.js',
-					dirname( __DIR__ ) . '/assets/js/folders_script.js',
+					'/assets/js/folders_script.js',
 					[ 'jquery', 'sortable4folders' ],
 					[ [ 'query' => 'page=' . $this->_slug ] ]
 			),
-			Assets::build_script(
+			$this->assets_helper->build_script(
 					'sortable4folders',
-					$url . '/assets/js/Sortable.min.js',
-					dirname( __DIR__ ) . '/assets/js/Sortable.min.js',
+					'/assets/js/Sortable.min.js',
 					[],
 					[ [ 'query' => 'page=' . $this->_slug ] ]
 			),
