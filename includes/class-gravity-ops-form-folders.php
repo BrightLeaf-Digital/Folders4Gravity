@@ -169,24 +169,26 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
      */
     public function register_menus() {
         SuiteMenu::ensure_parent_menu();
+        $cap_forms = current_user_can( 'gform_full_access' ) ? 'gform_full_access' : 'gravityforms_edit_forms';
         add_submenu_page(
-                'gf_edit_forms',
-                'Form Folders',
-                'Form Folders',
-                'gform_full_access',
-                $this->_slug,
-                [ $this, 'form_folders_page' ]
+            'gf_edit_forms',
+            'Form Folders',
+            'Form Folders',
+            $cap_forms,
+            $this->_slug,
+            [ $this, 'form_folders_page' ]
         );
+        $cap_ops = $cap_forms;
         add_submenu_page(
-                'gravity_ops',
-                $this->_short_title,
-                $this->_short_title,
-                'gform_full_access',
-                $this->_slug,
-                [
-					$this,
-					'form_folders_page',
-                ]
+            'gravity_ops',
+            $this->_short_title,
+            $this->_short_title,
+            $cap_ops,
+            $this->_slug,
+            [
+                $this,
+                'form_folders_page',
+            ]
         );
     }
 
@@ -287,10 +289,10 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
 			wp_die();
 		}
 
-		if ( ! current_user_can( 'gform_full_access' ) ) {
-			wp_send_json_error( [ 'message' => 'Unauthorized' ], 403 );
-			wp_die();
-		}
+		if ( ! current_user_can( 'gform_full_access' ) && ! current_user_can( 'gravityforms_edit_forms' ) ) {
+            wp_send_json_error( [ 'message' => 'Unauthorized' ], 403 );
+            wp_die();
+        }
 
 		if ( empty( $_POST['folderName'] ) ) {
 			wp_send_json_error( [ 'message' => 'Folder name is required' ], 403 );
@@ -324,10 +326,10 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
 			wp_die();
 		}
 
-		if ( ! current_user_can( 'gform_full_access' ) ) {
-			wp_send_json_error( [ 'message' => 'Unauthorized' ] );
-			wp_die();
-		}
+		if ( ! current_user_can( 'gform_full_access' ) && ! current_user_can( 'gravityforms_edit_forms' ) ) {
+            wp_send_json_error( [ 'message' => 'Unauthorized' ] );
+            wp_die();
+        }
 
 		if ( empty( $_POST['formIDs'] ) || empty( $_POST['folderID'] ) ) {
 			wp_send_json_error( [ 'message' => 'Form and Folder are required' ] );
@@ -363,10 +365,10 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
 			wp_die();
 		}
 
-		if ( ! current_user_can( 'gform_full_access' ) ) {
-			wp_send_json_error( [ 'message' => 'Unauthorized' ], 403 );
-			wp_die();
-		}
+		if ( ! current_user_can( 'gform_full_access' ) && ! current_user_can( 'gravityforms_edit_forms' ) ) {
+            wp_send_json_error( [ 'message' => 'Unauthorized' ], 403 );
+            wp_die();
+        }
 
 		if ( empty( $_POST['formID'] ) ) {
 			wp_send_json_error( [ 'message' => 'Form ID is required' ], 403 );
