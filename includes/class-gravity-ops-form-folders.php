@@ -168,7 +168,6 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
      * @return void
      */
     public function register_menus() {
-        SuiteMenu::ensure_parent_menu();
         $cap_forms = current_user_can( 'gform_full_access' ) ? 'gform_full_access' : 'gravityforms_edit_forms';
         add_submenu_page(
             'gf_edit_forms',
@@ -177,18 +176,6 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
             $cap_forms,
             $this->_slug,
             [ $this, 'form_folders_page' ]
-        );
-        $cap_ops = $cap_forms;
-        add_submenu_page(
-            'gravity_ops',
-            $this->_short_title,
-            $this->_short_title,
-            $cap_ops,
-            $this->_slug,
-            [
-                $this,
-                'form_folders_page',
-            ]
         );
     }
 
