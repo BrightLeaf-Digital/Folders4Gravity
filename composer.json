@@ -8,7 +8,7 @@
     }
   ],
   "require": {
-    "gravityops/core": ">=1.0.14"
+    "gravityops/core": ">=1.0.18"
   },
   "minimum-stability": "dev",
   "prefer-stable": true,
