@@ -3,6 +3,7 @@
 use F4G\GravityOps\Core\Admin\ReviewPrompter;
 use F4G\GravityOps\Core\Admin\SuiteMenu;
 use F4G\GravityOps\Core\Admin\SurveyPrompter;
+use F4G\GravityOps\Core\Admin\AdminShell;
 use F4G\GravityOps\Core\Utils\AssetHelper as Assets;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -129,7 +130,7 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
 	 * @return void
 	 */
 	public function init_admin() {
-		parent::init_admin();
+        parent::init_admin();
         add_action( 'admin_menu', [ $this, 'register_menus' ], 15 );
         add_action(
             'wp_dashboard_setup',
@@ -158,8 +159,37 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
 			$this->_version,
 			'free'
 		);
-		$survey_prompter->init();
-	}
+        $survey_prompter->init();
+
+        // Register the GravityOps AdminShell page for the free Folders plugin.
+        // Tabs: Overview (render), Help (render), Affiliation (external link)
+        AdminShell::instance()->register_plugin_page(
+            'folders-4-gravity',
+            [
+                'title'      => $this->_title,
+                'menu_title' => $this->_short_title,
+                'subtitle'   => '',
+                'links'      => [],
+                'tabs'       => [
+                    'overview'    => [
+                        'label'    => 'Overview',
+                        'type'     => 'render',
+                        'callback' => [ $this, 'gops_render_overview' ],
+                    ],
+                    'help'        => [
+                        'label'    => 'Help',
+                        'type'     => 'render',
+                        'callback' => [ $this, 'gops_render_help' ],
+                    ],
+                    'affiliation' => [
+                        'label' => 'Affiliation',
+                        'type'  => 'link',
+                        'url'   => 'https://brightleafdigital.io/affiliate/',
+                    ],
+                ],
+            ]
+        );
+    }
 
     /**
      * Registers the menus used in the application.
@@ -189,6 +219,160 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
      */
     public function get_app_menu_icon() {
         return SuiteMenu::get_icon();
+    }
+
+    /**
+     * Render: GravityOps → Folders → Overview
+     * Shows quick stats and links to Forms/Views folder pages.
+     */
+    public function gops_render_overview() {
+        // Count forms
+        $forms       = GFAPI::get_forms();
+        $total_forms = is_array( $forms ) ? count( $forms ) : 0;
+
+        // All form IDs assigned to any folder term
+        $assigned_form_ids = [];
+        $terms_forms       = get_terms(
+            [
+				'taxonomy'   => $this->taxonomy_name,
+				'hide_empty' => false,
+			]
+            );
+        if ( ! is_wp_error( $terms_forms ) && $terms_forms ) {
+            foreach ( $terms_forms as $t ) {
+                $ids = get_objects_in_term( $t->term_id, $this->taxonomy_name );
+                if ( is_array( $ids ) ) {
+                    foreach ( $ids as $fid ) {
+                        $assigned_form_ids[ (int) $fid ] = true;
+                    }
+                }
+            }
+        }
+        $unfiled_forms = 0;
+        if ( $total_forms > 0 ) {
+            // GF forms array doesn’t expose post IDs directly; GF uses internal IDs which map to objects in taxonomy as strings.
+            foreach ( $forms as $form ) {
+                $fid = isset( $form['id'] ) ? (int) $form['id'] : 0;
+                if ( $fid && empty( $assigned_form_ids[ $fid ] ) ) {
+                    ++$unfiled_forms;
+                }
+            }
+        }
+
+        // Views (GravityView) — only when GV is active
+        $unfiled_views = 0;
+        if ( post_type_exists( 'gravityview' ) ) {
+            $view_ids          = get_posts(
+                [
+					'post_type'      => 'gravityview',
+					'fields'         => 'ids',
+					'posts_per_page' => 999, //phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
+				]
+                ); // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
+            $total_views       = is_array( $view_ids ) ? count( $view_ids ) : 0;
+            $assigned_view_ids = [];
+            $terms_views       = get_terms(
+                [
+					'taxonomy'   => $this->view_taxonomy_name,
+					'hide_empty' => false,
+				]
+                );
+            if ( ! is_wp_error( $terms_views ) && $terms_views ) {
+                foreach ( $terms_views as $t ) {
+                    $ids = get_objects_in_term( $t->term_id, $this->view_taxonomy_name );
+                    if ( is_array( $ids ) ) {
+                        foreach ( $ids as $vid ) {
+                            $assigned_view_ids[ (int) $vid ] = true;
+                        }
+                    }
+                }
+            }
+            if ( $total_views > 0 ) {
+                foreach ( $view_ids as $vid ) {
+                    if ( $vid && empty( $assigned_view_ids[ (int) $vid ] ) ) {
+                        ++$unfiled_views;
+                    }
+                }
+            }
+        }
+
+        // Folder term counts (forms)
+        $form_folders_cnt = 0;
+        $terms_forms_all  = get_terms(
+            [
+                'taxonomy'   => $this->taxonomy_name,
+                'hide_empty' => false,
+            ]
+        );
+        if ( ! is_wp_error( $terms_forms_all ) && $terms_forms_all ) {
+            $form_folders_cnt = count( $terms_forms_all );
+        }
+
+        // Also count view folders if GV is active
+        $view_folders_cnt = 0;
+        if ( post_type_exists( 'gravityview' ) ) {
+            $terms_views_all = get_terms(
+                [
+                    'taxonomy'   => $this->view_taxonomy_name,
+                    'hide_empty' => false,
+                ]
+            );
+            if ( ! is_wp_error( $terms_views_all ) && $terms_views_all ) {
+                $view_folders_cnt = count( $terms_views_all );
+            }
+        }
+
+        // Filed counts and totals
+        $filed_forms   = max( 0, (int) $total_forms - $unfiled_forms );
+        $filed_views   = isset( $total_views ) ? max( 0, $total_views - $unfiled_views ) : 0;
+        $total_folders = (int) $form_folders_cnt + (int) $view_folders_cnt;
+        $total_unfiled = $unfiled_forms + $unfiled_views;
+        $total_filed   = (int) $filed_forms + (int) $filed_views;
+
+        // Links to folder pages
+        $forms_page_url = admin_url( 'admin.php?page=' . $this->_slug );
+        $views_page_url = post_type_exists( 'gravityview' ) ? admin_url( 'admin.php?page=go_f4g_gv-views-folders' ) : '';
+
+        echo '<div class="gops-card gops-card--brand">';
+        echo '<h2 class="gops-title" style="margin:0 0 8px;">Folders Overview</h2>';
+        echo '<div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:10px;">';
+        // Folder counts
+        echo '<div class="gops-card" style="flex:1 1 200px;min-width:200px;"><h3 class="gops-title" style="margin:0 0 4px;">Form Folders</h3><p style="font-size:20px;font-weight:600;">' . esc_html( (string) $form_folders_cnt ) . '</p></div>';
+        echo '<div class="gops-card" style="flex:1 1 200px;min-width:200px;"><h3 class="gops-title" style="margin:0 0 4px;">View Folders</h3><p style="font-size:20px;font-weight:600;">' . esc_html( (string) $view_folders_cnt ) . '</p></div>';
+        echo '<div class="gops-card" style="flex:1 1 200px;min-width:200px;"><h3 class="gops-title" style="margin:0 0 4px;">Total Folders</h3><p style="font-size:20px;font-weight:600;">' . esc_html( (string) $total_folders ) . '</p></div>';
+
+        // Filed
+        echo '<div class="gops-card" style="flex:1 1 200px;min-width:200px;"><h3 class="gops-title" style="margin:0 0 4px;">Forms (filed)</h3><p style="font-size:20px;font-weight:600;">' . esc_html( (string) $filed_forms ) . '</p></div>';
+        echo '<div class="gops-card" style="flex:1 1 200px;min-width:200px;"><h3 class="gops-title" style="margin:0 0 4px;">Views (filed)</h3><p style="font-size:20px;font-weight:600;">' . esc_html( (string) $filed_views ) . '</p></div>';
+        echo '<div class="gops-card" style="flex:1 1 200px;min-width:200px;"><h3 class="gops-title" style="margin:0 0 4px;">Total Filed</h3><p style="font-size:20px;font-weight:600;">' . esc_html( (string) $total_filed ) . '</p></div>';
+
+        // Unfiled
+        echo '<div class="gops-card" style="flex:1 1 200px;min-width:200px;"><h3 class="gops-title" style="margin:0 0 4px;">Forms (unfiled)</h3><p style="font-size:20px;font-weight:600;">' . esc_html( (string) $unfiled_forms ) . '</p></div>';
+        echo '<div class="gops-card" style="flex:1 1 200px;min-width:200px;"><h3 class="gops-title" style="margin:0 0 4px;">Views (unfiled)</h3><p style="font-size:20px;font-weight:600;">' . esc_html( (string) $unfiled_views ) . '</p></div>';
+        echo '<div class="gops-card" style="flex:1 1 200px;min-width:200px;"><h3 class="gops-title" style="margin:0 0 4px;">Total Unfiled</h3><p style="font-size:20px;font-weight:600;">' . esc_html( (string) $total_unfiled ) . '</p></div>';
+        echo '</div>';
+        echo '<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">';
+        echo '<a class="button button-primary" href="' . esc_url( $forms_page_url ) . '">Open Form Folders</a>';
+        if ( $views_page_url ) {
+            echo '<a class="button" href="' . esc_url( $views_page_url ) . '">Open View Folders</a>';
+        }
+        echo '</div>';
+        echo '</div>';
+    }
+
+    /**
+     * Render: GravityOps → Folders → Help
+     */
+    public function gops_render_help() {
+        AdminShell::render_help_tab(
+            [
+                'Learn More'             => 'https://brightleafdigital.io/folders-4-gravity/',
+                'Docs'                   => 'https://brightleafdigital.io/folders-4-gravity/#docs',
+                'Community forum'        => 'https://brightleafdigital.io/community/',
+                'Open a support request' => 'https://brightleafdigital.io/support/',
+                'Join the community'     => 'https://brightleafdigital.io/plugintomember',
+            ]
+        );
     }
 
     /**
@@ -231,14 +415,7 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
 		<?php
     }
 
-	/**
-	 * Registers a submenu page under the Gravity Forms menu for form folders.
-	 *
-	 * @return void
-	 */
-	public function register_form_folders_submenu() {
-	}
-	/**
+    /**
 	 * Registers a custom taxonomy for organizing forms into folders.
 	 *
 	 * The taxonomy 'go_f4g_form_folders' is associated with the 'gf_form' post type. It is not publicly queryable,
@@ -924,9 +1101,7 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
         $save_folder_order_nonce = wp_create_nonce( 'save_folder_order' );
         $folders                 = $this->get_ordered_folders();
 
-        $plugin_page_url = get_admin_url() . 'admin.php?page=' . $this->_slug;
-
-		?>
+        ?>
         <div class="wrap">
             <h1>Form Folders</h1>
             <br>
