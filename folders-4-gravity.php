@@ -4,17 +4,30 @@
  * Plugin URI: https://brightleafdigital.io/folders-4-gravity/
  * Author URI: https://brightleafdigital.io/
  * Description: Organize your Gravity Forms and Gravity Views by folders.
- * Version: 1.0.5
+ * Version: 1.0.6
  * Author: BrightLeaf Digital
  * License: GPL-2.0+
  * Requires PHP: 8.0
  */
+
+use F4G\GravityOps\Core\Admin\AdminShell;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
 require_once __DIR__ . '/vendor-prefixed/autoload.php';
+
+require_once __DIR__ . '/vendor/autoload.php';
+
+// Instantiate this plugin's copy of the AdminShell early so provider negotiation can happen on plugins_loaded.
+add_action(
+    'plugins_loaded',
+    function () {
+	    AdminShell::instance();
+    },
+    1
+);
 
 
 if ( function_exists( 'register_form_folders_submenu' ) ) {
@@ -27,6 +40,14 @@ if ( function_exists( 'register_form_folders_submenu' ) ) {
 
 	return;
 }
+
+// Ensure GravityOps shared assets resolve when library is vendor-installed in this plugin.
+add_filter(
+    'gravityops_assets_base_url',
+    function ( $url ) {
+        return $url ?: plugins_url( 'vendor-prefixed/gravityops/core/assets/', __FILE__ );
+    }
+);
 
 add_action(
 	'gform_loaded',

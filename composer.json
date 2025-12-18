@@ -8,7 +8,7 @@
     }
   ],
   "require": {
-    "gravityops/core": ">=1.0.18"
+    "gravityops/core": "^1.0.21"
   },
   "minimum-stability": "dev",
   "prefer-stable": true,
@@ -45,6 +45,12 @@
     ],
     "post-update-cmd": [
       "@prefix-namespaces"
+    ]
+  }
+  ,
+  "autoload": {
+    "files": [
+      "vendor-prefixed/gravityops/core/src/Admin/functions.php"
     ]
   }
 }

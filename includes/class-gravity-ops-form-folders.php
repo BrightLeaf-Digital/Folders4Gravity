@@ -5,6 +5,7 @@ use F4G\GravityOps\Core\Admin\SuiteMenu;
 use F4G\GravityOps\Core\Admin\SurveyPrompter;
 use F4G\GravityOps\Core\Admin\AdminShell;
 use F4G\GravityOps\Core\Utils\AssetHelper as Assets;
+use function F4G\GravityOps\Core\Admin\gravityops_shell;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -163,7 +164,7 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
 
         // Register the GravityOps AdminShell page for the free Folders plugin.
         // Tabs: Overview (render), Help (render), Affiliation (external link)
-        AdminShell::instance()->register_plugin_page(
+        gravityops_shell()->register_plugin_page(
             'folders-4-gravity',
             [
                 'title'      => $this->_title,
