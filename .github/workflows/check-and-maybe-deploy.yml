@@ -97,7 +97,7 @@ jobs:
       - name: Prepare Build Directory
         run: |
           mkdir svn-build
-          rsync -av --exclude='.git' --exclude='vendor' --exclude='.github' --exclude='svn-build' --exclude='composer.json' --exclude='composer.lock' --exclude='.gitignore' . svn-build/
+          rsync -av --exclude='.git' --exclude='.github' --exclude='svn-build' --exclude='composer.json' --exclude='composer.lock' --exclude='.gitignore' . svn-build/
 
       - name: WordPress Plugin Deploy
         uses: 10up/action-wordpress-plugin-deploy@stable
