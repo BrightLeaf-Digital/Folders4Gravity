@@ -14,9 +14,16 @@
   "prefer-stable": true,
   "extra": {
     "strauss": {
+      "target_directory": "vendor/F4G",
       "namespace_prefix": "F4G\\",
       "classmap_prefix": "F4G_",
       "constant_prefix": "F4G_",
+      "packages": [
+        "gravityops/core"
+      ],
+      "delete_vendor_packages": [
+        "gravityops/core"
+      ],
       "exclude_from_copy": {
         "file_patterns": [
           "(^|/)\\.git(/|$)",
@@ -38,7 +45,8 @@
       "@php -r \"if (!file_exists('bin/strauss.phar')) { file_put_contents('bin/strauss.phar', file_get_contents('https://github.com/BrianHenryIE/strauss/releases/latest/download/strauss.phar')); }\"",
       "@php bin/strauss.phar",
       "@php -r \"unlink('bin/strauss.phar');\"",
-      "@php -r \"if (is_dir('bin')) rmdir('bin');\""
+      "@php -r \"if (is_dir('bin')) rmdir('bin');\"",
+      "@composer dump-autoload"
     ],
     "post-install-cmd": [
       "@prefix-namespaces"
@@ -50,7 +58,8 @@
   ,
   "autoload": {
     "files": [
-      "vendor-prefixed/gravityops/core/src/Admin/functions.php"
+      "vendor/F4G/autoload.php",
+      "vendor/F4G/gravityops/core/src/Admin/functions.php"
     ]
   }
 }
