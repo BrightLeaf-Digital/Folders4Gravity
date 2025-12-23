@@ -16,8 +16,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-require_once __DIR__ . '/vendor-prefixed/autoload.php';
-
 require_once __DIR__ . '/vendor/autoload.php';
 
 // Instantiate this plugin's copy of the AdminShell early so provider negotiation can happen on plugins_loaded.
@@ -45,7 +43,7 @@ if ( function_exists( 'register_form_folders_submenu' ) ) {
 add_filter(
     'gravityops_assets_base_url',
     function ( $url ) {
-        return $url ?: plugins_url( 'vendor-prefixed/gravityops/core/assets/', __FILE__ );
+        return $url ?: plugins_url( 'vendor/F4G/gravityops/core/assets/', __FILE__ );
     }
 );
 
