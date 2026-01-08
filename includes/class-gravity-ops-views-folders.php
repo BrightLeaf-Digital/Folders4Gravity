@@ -1,6 +1,6 @@
 <?php
 
-use F4G\GravityOps\Core\Utils\AssetHelper;
+use GravityOps\Core\Utils\AssetHelper;
 use GV\View;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -70,7 +70,7 @@ class Gravity_Ops_Views_Folders extends GFAddOn {
 
 	// phpcs:enable PSR2.Classes.PropertyDeclaration.Underscore
 
-	use F4G\GravityOps\Core\Traits\SingletonTrait;
+	use GravityOps\Core\Traits\SingletonTrait;
 
 	/**
 	 * The prefix to be used by the plugin. Gravity Ops-Folders4Gravity

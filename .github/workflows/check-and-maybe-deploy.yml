@@ -30,6 +30,9 @@ jobs:
       - name: Install dependencies
         run: composer install --no-dev --no-progress --optimize-autoloader
 
+      - name: Prefix namespaces (Strauss)
+        run: composer prefix-namespaces
+
       # Run PCP check
       - name: PCP
         uses: wordpress/plugin-check-action@v1
@@ -91,6 +94,9 @@ jobs:
       # We install before the 10up action so the 'vendor' folder is populated with the private lib
       - name: Install dependencies
         run: composer install --no-dev --no-progress --optimize-autoloader
+
+      - name: Prefix namespaces (Strauss)
+        run: composer prefix-namespaces
 
       # Create a clean build directory.
       # This preserves the 'vendor' folder we just built with the SSH key.

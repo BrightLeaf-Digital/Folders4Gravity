@@ -10,7 +10,7 @@
  * Requires PHP: 8.0
  */
 
-use F4G\GravityOps\Core\Admin\AdminShell;
+use function GravityOps\Core\Admin\gravityops_shell;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -18,11 +18,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 require_once __DIR__ . '/vendor/autoload.php';
 
+if ( file_exists( __DIR__ . '/vendor/F4G/autoload.php' ) ) {
+	require_once __DIR__ . '/vendor/F4G/autoload.php';
+}
+
 // Instantiate this plugin's copy of the AdminShell early so provider negotiation can happen on plugins_loaded.
 add_action(
     'plugins_loaded',
     function () {
-	    AdminShell::instance();
+	    gravityops_shell();
     },
     1
 );
@@ -43,7 +47,15 @@ if ( function_exists( 'register_form_folders_submenu' ) ) {
 add_filter(
     'gravityops_assets_base_url',
     function ( $url ) {
-        return $url ?: plugins_url( 'vendor/F4G/gravityops/core/assets/', __FILE__ );
+        if ( $url ) {
+            return $url;
+        }
+
+        if ( file_exists( __DIR__ . '/vendor/F4G/gravityops/core/assets/' ) ) {
+            return plugins_url( 'vendor/F4G/gravityops/core/assets/', __FILE__ );
+        }
+
+        return plugins_url( 'vendor/gravityops/core/assets/', __FILE__ );
     }
 );
 

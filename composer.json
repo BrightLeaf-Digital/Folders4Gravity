@@ -2,13 +2,23 @@
   "name": "gravityops/folders",
   "repositories": [
     {
+      "type": "path",
+      "url": "../../../gravityops",
+      "options": {
+        "symlink": true
+      }
+    },
+    {
       "type": "vcs",
       "url": "git@github.com:Eitan-brightleaf/gravityops.git",
       "no-api": true
     }
   ],
   "require": {
-    "gravityops/core": "1.0.28"
+    "gravityops/core": "1.0.34"
+  },
+  "require-dev": {
+    "gravityops/core": "dev-main as 1.0.34"
   },
   "minimum-stability": "dev",
   "prefer-stable": true,
@@ -21,8 +31,10 @@
       "packages": [
         "gravityops/core"
       ],
-      "delete_vendor_packages": [
-        "gravityops/core"
+      "delete_vendor_packages": true,
+      "update_call_sites": [
+        "includes",
+        "folders-4-gravity.php"
       ],
       "exclude_from_copy": {
         "file_patterns": [
@@ -47,19 +59,6 @@
       "@php -r \"unlink('bin/strauss.phar');\"",
       "@php -r \"if (is_dir('bin')) rmdir('bin');\"",
       "@composer dump-autoload"
-    ],
-    "post-install-cmd": [
-      "@prefix-namespaces"
-    ],
-    "post-update-cmd": [
-      "@prefix-namespaces"
-    ]
-  }
-  ,
-  "autoload": {
-    "files": [
-      "vendor/F4G/autoload.php",
-      "vendor/F4G/gravityops/core/src/Admin/functions.php"
     ]
   }
 }

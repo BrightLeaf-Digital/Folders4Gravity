@@ -1,11 +1,11 @@
 <?php
 
-use F4G\GravityOps\Core\Admin\ReviewPrompter;
-use F4G\GravityOps\Core\Admin\SuiteMenu;
-use F4G\GravityOps\Core\Admin\SurveyPrompter;
-use F4G\GravityOps\Core\Admin\AdminShell;
-use F4G\GravityOps\Core\Utils\AssetHelper as Assets;
-use function F4G\GravityOps\Core\Admin\gravityops_shell;
+use GravityOps\Core\Admin\ReviewPrompter;
+use GravityOps\Core\Admin\SuiteMenu;
+use GravityOps\Core\Admin\SurveyPrompter;
+use GravityOps\Core\Admin\AdminShell;
+use GravityOps\Core\Utils\AssetHelper as Assets;
+use function GravityOps\Core\Admin\gravityops_shell;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -73,7 +73,7 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
 
     // phpcs:enable PSR2.Classes.PropertyDeclaration.Underscore
 
-    use F4G\GravityOps\Core\Traits\SingletonTrait;
+    use GravityOps\Core\Traits\SingletonTrait;
 
     /**
      * The prefix to be used by the plugin. Gravity Ops-Folders4Gravity
@@ -219,7 +219,7 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
      * @return string The base64-encoded SVG icon as a data URL.
      */
     public function get_app_menu_icon() {
-        return SuiteMenu::get_icon();
+        return SuiteMenu::get_plugin_icon_url( 'folders-4-gravity' ) ?: 'dashicons-portfolio';
     }
 
     /**
