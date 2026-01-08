@@ -28,7 +28,7 @@ jobs:
 
       # Remove the local path repository so Composer uses the VCS (Git) one instead
       - name: Remove local path repository
-        run: composer config repositories.0 --unset
+        run: composer config repositories.gravityops-local --unset
 
       # This ensures the shared library classes are available for the PCP check
       - name: Install dependencies
@@ -41,7 +41,9 @@ jobs:
       - name: PCP
         uses: wordpress/plugin-check-action@v1
         with:
-          exclude-files: '.gitignore'
+          exclude-files: |
+            .gitignore
+            .wp-env.json
   get_version:
     needs: pcp
     runs-on: ubuntu-latest
@@ -101,7 +103,7 @@ jobs:
 
       # Remove the local path repository so Composer uses the VCS (Git) one instead
       - name: Remove local path repository
-        run: composer config repositories.0 --unset
+        run: composer config repositories.gravityops-local --unset
 
       - name: Prefix namespaces (Strauss)
         run: composer prefix-namespaces

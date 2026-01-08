@@ -1,19 +1,19 @@
 {
   "name": "gravityops/folders",
-  "repositories": [
-    {
+  "repositories": {
+    "gravityops-local":{
       "type": "path",
       "url": "../../../gravityops",
       "options": {
         "symlink": true
       }
     },
-    {
+    "gravityops-remote":{
       "type": "vcs",
       "url": "git@github.com:Eitan-brightleaf/gravityops.git",
       "no-api": true
     }
-  ],
+  },
   "require": {
     "gravityops/core": "1.0.34"
   },
