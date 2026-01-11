@@ -26,13 +26,15 @@ jobs:
         with:
             ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY_GRAVITYOPS_CORE }}
 
-      # Remove the local path repository so Composer uses the VCS (Git) one instead
-      - name: Remove local path repository
-        run: composer config repositories.gravityops-local --unset
-
-      # This ensures the shared library classes are available for the PCP check
-      - name: Install dependencies
-        run: composer install --no-dev --no-progress --optimize-autoloader
+      # Clean up config and resolve correct tag dynamically
+      - name: Prepare Composer for production
+        run: |
+          composer config repositories.gravityops-local --unset
+          composer config require-dev.gravityops/core --unset
+          composer config minimum-stability stable
+          composer config prefer-stable true
+          CORE_VERSION=$(jq -r '.require["gravityops/core"]' composer.json)
+          composer require "gravityops/core:${CORE_VERSION}@stable" --no-dev --no-progress --optimize-autoloader --no-interaction
 
       - name: Prefix namespaces (Strauss)
         run: composer prefix-namespaces
@@ -97,13 +99,16 @@ jobs:
         with:
             ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY_GRAVITYOPS_CORE }}
 
-      # We install before the 10up action so the 'vendor' folder is populated with the private lib
-      - name: Install dependencies
-        run: composer install --no-dev --no-progress --optimize-autoloader
 
-      # Remove the local path repository so Composer uses the VCS (Git) one instead
-      - name: Remove local path repository
-        run: composer config repositories.gravityops-local --unset
+      # Clean up config and resolve correct tag dynamically
+      - name: Prepare Composer for production
+        run: |
+          composer config repositories.gravityops-local --unset
+          composer config require-dev.gravityops/core --unset
+          composer config minimum-stability stable
+          composer config prefer-stable true
+          CORE_VERSION=$(jq -r '.require["gravityops/core"]' composer.json)
+          composer require "gravityops/core:${CORE_VERSION}@stable" --no-dev --no-progress --optimize-autoloader --no-interaction
 
       - name: Prefix namespaces (Strauss)
         run: composer prefix-namespaces
