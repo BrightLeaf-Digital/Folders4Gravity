@@ -33,7 +33,7 @@ jobs:
           composer config minimum-stability stable
           composer config prefer-stable true
           CORE_VERSION=$(jq -r '.require["gravityops/core"]' composer.json)
-          composer require "gravityops/core:${CORE_VERSION}@stable" --no-dev --no-progress --optimize-autoloader --no-interaction
+          composer require "gravityops/core:${CORE_VERSION}@stable" --update-no-dev --no-progress --optimize-autoloader --no-interaction
 
       - name: Prefix namespaces (Strauss)
         run: composer prefix-namespaces
