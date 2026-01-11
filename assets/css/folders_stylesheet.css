@@ -11,23 +11,32 @@
     display: none;
     list-style: none;
     margin: 0;
-    padding: 5px 0;
-    background: #fff;
-    border: 1px solid #ddd;
+    padding: 8px 0;
+    background: #F8F5FF; /* Brand Container color */
+    border: 1px solid #D8CFF0; /* Brand Subtle Border */
     position: absolute;
-    top: 20px;
+    top: 24px;
     left: 0;
     z-index: 1000;
-    width: 200px;
-    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
+    width: 220px;
+    box-shadow: 0 4px 12px rgba(151, 91, 229, 0.12); /* Purple-tinted shadow */
+    border-radius: 8px;
+    max-height: 400px;
+    overflow-y: auto;
 }
 
 .settings-item {
     text-decoration: none;
-    color: #0073aa;
+    color: #5F6EEA; /* Accent Product Blue */
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 8px;
+    padding: 6px 12px;
+}
+
+.settings-item:hover {
+    background: #F2A6E8; /* Accent Magenta Soft */
+    color: #1A1429;
 }
 
 .settings-icon {
@@ -56,11 +65,13 @@ li {
 }
 
 .folder-item {
-    font-size: 3em;
+    font-size: 1.2em; /* Reduced from 3em to be more standard */
+    font-weight: 500;
 }
 
 .folder-icon {
-    margin-right: 5px;
+    margin-right: 8px;
+    color: #975BE5; /* Primary Brand Purple */
 }
 
 .folder-forms {
@@ -68,11 +79,45 @@ li {
     gap: 20px;
     align-items: flex-start;
     justify-content: flex-start;
-    max-width: 800px;
+    max-width: 900px;
+    margin-top: 30px;
 }
 
 .folder-forms-item {
     flex: 1;
+    background: #F8F5FF; /* Container color */
+    border: 1px solid #D8CFF0; /* Border Subtle */
+    padding: 20px;
+    border-radius: 12px;
+}
+
+/* Table styling within folders */
+.gops-admin .wp-list-table {
+    border: 1px solid #D8CFF0;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(151, 91, 229, 0.05);
+}
+
+.gops-admin .wp-list-table thead th {
+    background: #F8F5FF;
+    color: #1A1429;
+    font-weight: 600;
+}
+
+.gops-admin .button-link-delete {
+    color: #991b1b !important;
+    font-weight: 500;
+}
+
+.gops-admin .button-link-delete:hover {
+    color: #dc2626 !important;
+    text-decoration: underline;
+}
+
+.gops-admin select[multiple] {
+    border: 1px solid #D8CFF0;
+    border-radius: 8px;
+    padding: 8px;
 }
 
 .drag-handle {
@@ -86,48 +131,41 @@ li {
 .gf-sortable-folders {
     list-style: none;
     padding: 0;
-    margin: 0;
+    margin: 0 0 30px 0;
 }
 
 .gf-folder-item {
-    font-size: 3em;
-    padding: 10px;
+    font-size: 1.1em;
+    padding: 12px 16px;
     margin-bottom: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    background: #f9f9f9;
+    border: 1px solid #D8CFF0; /* Border Subtle */
+    border-radius: 12px;
+    background: #F8F5FF; /* Container color */
     display: flex;
     align-items: center;
-    gap: 10px;
-    transition: background-color 0.2s ease;
+    gap: 12px;
+    transition: all 0.2s ease;
 }
 
 .gf-folder-item:hover {
-    background: #f0f0f0;
+    background: #fff;
+    border-color: #975BE5;
+    box-shadow: 0 4px 12px rgba(151, 91, 229, 0.08);
 }
 
-.gf-folder-item.sortable-ghost {
-    opacity: 0.4;
+.gf-folder-item a {
+    text-decoration: none;
+    color: #1A1429; /* Main Text */
+    font-weight: 600;
 }
 
 .gf-drag-handle {
     cursor: grab;
-    color: #666;
-    font-size: 0.6em;
+    color: #8A8699; /* Light Text */
     padding: 5px;
-    border-radius: 3px;
-    transition: color 0.2s ease;
 }
 
 .gf-drag-handle:hover {
-    color: #0073aa;
-    background: rgba(0, 115, 170, 0.1);
-}
-
-.gf-drag-handle:active {
-    cursor: grabbing;
-}
-
-.gf-folder-icon {
-    margin-right: 5px;
+    color: #975BE5; /* Brand Purple */
+    background: rgba(151, 91, 229, 0.1);
 }

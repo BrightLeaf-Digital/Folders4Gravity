@@ -1,7 +1,10 @@
 <?php
 
 use GravityOps\Core\Utils\AssetHelper;
+use GravityOps\Core\Admin\AdminShell;
+use GravityOps\Core\Admin\SuiteMenu;
 use GV\View;
+use function GravityOps\Core\Admin\gravityops_shell;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -106,6 +109,9 @@ class Gravity_Ops_Views_Folders extends GFAddOn {
 	 */
 	public function init() {
 		parent::init();
+
+		add_filter( 'gravityops_is_shell_page', [ $this, 'filter_is_shell_page' ], 10, 2 );
+
 		$this->register_views_folders_taxonomy();
 
         $this->assets_helper = new AssetHelper( plugins_url( '/', FOLDERS_4_GRAVITY_BASENAME ), dirname( __DIR__ ) );
@@ -120,6 +126,22 @@ class Gravity_Ops_Views_Folders extends GFAddOn {
         add_action( "wp_ajax_{$this->prefix}save_view_order", [ $this, 'handle_save_view_order' ] );
         add_action( "wp_ajax_{$this->prefix}save_views_folder_order", [ $this, 'ajax_save_views_folder_order' ] );
 	}
+
+    /**
+     * Filters the is_shell_page variable to include the view folders page.
+     *
+     * @param bool   $is_shell_page Whether the current page is a shell page.
+     * @param string $page The current page slug.
+     *
+     * @return bool
+     */
+    public function filter_is_shell_page( $is_shell_page, $page ) {
+        if ( $page === $this->_slug ) {
+            return true;
+        }
+
+        return $is_shell_page;
+    }
 
 	/**
 	 * Initializes the admin functionality of the plugin.
@@ -558,7 +580,7 @@ class Gravity_Ops_Views_Folders extends GFAddOn {
 		$styles = [
 			$this->assets_helper->build_style(
 					'view-folders-styles',
-					'assets/css/folders_stylesheet.css',
+					'/assets/css/folders_stylesheet.css',
 					[ [ 'query' => 'page=' . $this->_slug ] ],
 			),
 		];
@@ -574,13 +596,13 @@ class Gravity_Ops_Views_Folders extends GFAddOn {
 		$scripts = [
 			$this->assets_helper->build_script(
 					'view-folders-scripts',
-					'assets/js/views_folders_script.js',
+					'/assets/js/views_folders_script.js',
 					[ 'jquery', 'sortable4views' ],
 					[ [ 'query' => 'page=' . $this->_slug ] ]
 			),
 			$this->assets_helper->build_script(
 					'sortable4views',
-					'assets/js/Sortable.min.js',
+					'/assets/js/Sortable.min.js',
 					[],
 					[ [ 'query' => 'page=' . $this->_slug ] ]
 			),
@@ -672,12 +694,21 @@ class Gravity_Ops_Views_Folders extends GFAddOn {
 
 			?>
 
-			<div class="wrap">
-				<h1>Views in Folder: <?php echo esc_html( $folder->name ); ?> </h1>
+			<?php
+			echo '<div class="wrap gops-admin">';
+			gravityops_shell()->render_header_only(
+                [
+					'slug'  => 'folders-4-gravity',
+					'title' => 'Views in Folder: ' . $folder->name,
+				]
+            );
+			echo '<div class="gops-notices" aria-live="polite"></div>';
+			echo '<section class="gops-content">';
+			?>
 				<!--Back button-->
 				<br>
 				<a href="<?php echo esc_url( admin_url( 'admin.php?page=' . $this->_slug ) ); ?>" class="button">
-					Back to All Folders
+                    ← Back to All Folders
 				</a>
 				<br><br>
 
@@ -733,35 +764,13 @@ class Gravity_Ops_Views_Folders extends GFAddOn {
 										</code>
 									</td>
 									<!--Links-->
-									<td>
-										<a href="<?php echo esc_url( $edit_view_link ); ?>">Edit</a> |
-										<a href="<?php echo esc_url( get_permalink( $view->ID ) ); ?>">View</a> |
-										<?php if ( $form ) : ?>
-											<a href="<?php echo esc_url( admin_url( 'admin.php?page=gf_edit_forms&id=' . $form_id ) ); ?>"><?php echo esc_html( $form_title ); ?></a>
-										<?php else : ?>
-											<?php echo esc_html( $form_title ); ?>
-										<?php endif; ?>
-									</td>
+									<?php $this->render_links_td_section( $view, $form_id, $form ); ?>
 									<!--Actions-->
-									<td>
-										<button type="button" class="update-view button" data-action="<?php echo esc_attr( $this->prefix ); ?>remove_view_from_folder" data-view-id="<?php echo esc_attr( $view->ID ); ?>" data-nonce="<?php echo esc_attr( $remove_view_nonce ); ?>">
-											Remove
-										</button>
-										<?php
-										// Add clone button
-										$clone_view_nonce = wp_create_nonce( 'clone_view' );
-										?>
-										<button type="button" class="update-view button" data-action="<?php echo esc_attr( $this->prefix ); ?>clone_view" data-view-id="<?php echo esc_attr( $view->ID ); ?>" data-nonce="<?php echo esc_attr( $clone_view_nonce ); ?>">
-											Clone
-										</button>
-										<?php
-										// Add trash button
-										$trash_view_nonce = wp_create_nonce( 'trash_view' );
-										?>
-										<button type="button" class="update-view button" data-action="<?php echo esc_attr( $this->prefix ); ?>trash_view" data-view-id="<?php echo esc_attr( $view->ID ); ?>" data-nonce="<?php echo esc_attr( $trash_view_nonce ); ?>">
-											Trash
-										</button>
-									</td>
+									<?php
+									$clone_view_nonce = wp_create_nonce( 'clone_view' );
+									$trash_view_nonce = wp_create_nonce( 'trash_view' );
+									$this->render_buttons_td_section( $view, $remove_view_nonce, $clone_view_nonce, $trash_view_nonce );
+									?>
 								</tr>
 								<?php
 
@@ -811,8 +820,103 @@ class Gravity_Ops_Views_Folders extends GFAddOn {
 				</form>
 
 			<?php
+			echo '</section>';
 			echo '</div>';
 		}
+	}
+
+	/**
+	 * Renders the "Links" section of the table for a specific view in the folder.
+	 *
+	 * @param WP_Post $view    The current view.
+	 * @param int     $form_id The ID of the associated form.
+	 * @param array   $form    The associated form data.
+	 *
+	 * @return void
+	 */
+	private function render_links_td_section( $view, $form_id, $form ) {
+		$edit_view_link = admin_url( 'post.php?action=edit&post=' . $view->ID );
+		?>
+		<td>
+			<!--Edit View-->
+			<a href="<?php echo esc_url( $edit_view_link ); ?>">Edit</a> |
+			<!--View link-->
+			<a href="<?php echo esc_url( get_permalink( $view->ID ) ); ?>">View</a> |
+			<!--Entries Dropdown-->
+			<?php $this->render_entries_dropdown( $view, $form_id ); ?>
+			<!--Form Link-->
+			<?php if ( $form ) : ?>
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=gf_edit_forms&id=' . $form_id ) ); ?>"><?php echo esc_html( $form['title'] ); ?></a>
+			<?php else : ?>
+				Unknown Form
+			<?php endif; ?>
+		</td>
+		<?php
+	}
+
+	/**
+	 * Renders the "Entries" dropdown for a specific view.
+	 *
+	 * @param WP_Post $view    The current view.
+	 * @param int     $form_id The ID of the associated form.
+	 *
+	 * @return void
+	 */
+	private function render_entries_dropdown( $view, $form_id ) {
+		// Standard Gravity Forms entries link for the form
+		$entries_link        = admin_url( 'admin.php?page=gf_entries&view=entries&id=' . $form_id );
+		$export_entries_link = admin_url( 'admin.php?page=gf_export&view=export_entry&id=' . $form_id );
+
+		if ( in_array( 'gravityview-importer/gravityview-importer.php', get_option( 'active_plugins' ), true ) ) {
+			$import_entries_link = admin_url( 'admin.php?page=gv-admin-import-entries#targetForm=' . $form_id );
+		}
+
+		?>
+		<div class="dropdown">
+			<a href="<?php echo esc_url( $entries_link ); ?>" class="link">Entries</a>
+			<ul class="dropdown-menu">
+				<li>
+					<a href="<?php echo esc_url( $entries_link ); ?>">Entries</a>
+				</li>
+				<li>
+					<a href="<?php echo esc_url( $export_entries_link ); ?>">Export Entries</a>
+				</li>
+				<?php
+				if ( isset( $import_entries_link ) ) {
+					?>
+					<li><a href="<?php echo esc_url( $import_entries_link ); ?>">Import Entries</a></li>
+					<?php
+				}
+				?>
+			</ul>
+		</div> |
+		<?php
+	}
+
+	/**
+	 * Renders the "Buttons" section of the table for a specific view in the folder.
+	 *
+	 * @param WP_Post $view             The current view.
+	 * @param string  $remove_view_nonce The nonce for removing the view.
+	 * @param string  $clone_view_nonce  The nonce for cloning the view.
+	 * @param string  $trash_view_nonce  The nonce for trashing the view.
+	 *
+	 * @return void
+	 */
+	private function render_buttons_td_section( $view, $remove_view_nonce, $clone_view_nonce, $trash_view_nonce ) {
+		?>
+		<td>
+			<button type="button" class="update-view button" data-action="<?php echo esc_attr( $this->prefix ); ?>remove_view_from_folder" data-view-id="<?php echo esc_attr( $view->ID ); ?>" data-nonce="<?php echo esc_attr( $remove_view_nonce ); ?>">
+				Remove
+			</button>
+			<button type="button" class="update-view button" data-action="<?php echo esc_attr( $this->prefix ); ?>clone_view" data-view-id="<?php echo esc_attr( $view->ID ); ?>" data-nonce="<?php echo esc_attr( $clone_view_nonce ); ?>">
+				Clone
+			</button>
+			<button type="button" class="update-view button" data-action="<?php echo esc_attr( $this->prefix ); ?>trash_view" data-view-id="<?php echo esc_attr( $view->ID ); ?>" data-nonce="<?php echo esc_attr( $trash_view_nonce ); ?>">
+				Trash
+			</button>
+		</td>
+		<?php
 	}
 
 	/**
@@ -963,9 +1067,17 @@ class Gravity_Ops_Views_Folders extends GFAddOn {
 		$save_views_folder_order_nonce = wp_create_nonce( 'save_views_folder_order' );
 		$folders                       = $this->get_ordered_folders();
 		?>
-			<div class="wrap">
-				<h1>View Folders</h1>
-				<br>
+			<?php
+			echo '<div class="wrap gops-admin">';
+			gravityops_shell()->render_header_only(
+                [
+					'slug'  => 'folders-4-gravity',
+					'title' => 'View Folders',
+				]
+            );
+			echo '<div class="gops-notices" aria-live="polite"></div>';
+			echo '<section class="gops-content">';
+			?>
 				<ul class="gf-sortable-folders">
 					<?php
 					foreach ( $folders as $folder ) {
@@ -1002,7 +1114,7 @@ class Gravity_Ops_Views_Folders extends GFAddOn {
 							<label for="folder_name" class="form-field-label">Create A New Folder</label><br>
 							<input type="text" id="folder_name" name="folder_name" placeholder="Folder Name" required>
 							<input type="hidden" name="nonce" value="<?php echo esc_attr( $create_folder_nonce ); ?>">
-							<button type="submit" class="button">Create Folder</button>
+							<button type="submit" class="button button-primary">Create Folder</button>
 						</form>
 					</div>
 
@@ -1046,6 +1158,7 @@ class Gravity_Ops_Views_Folders extends GFAddOn {
 						</form>
 					</div>
 				</div>
+				</section>
 			</div>
 		<?php
 	}

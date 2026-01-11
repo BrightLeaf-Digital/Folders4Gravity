@@ -111,6 +111,8 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
 
         $this->assets_helper = new Assets( plugins_url( '/', FOLDERS_4_GRAVITY_BASENAME ), dirname( __DIR__ ) );
 
+		add_filter( 'gravityops_is_shell_page', [ $this, 'filter_is_shell_page' ], 10, 2 );
+
 		parent::init();
 		$this->register_form_folders_taxonomy();
 
@@ -124,6 +126,22 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
         add_action( "wp_ajax_{$this->prefix}save_form_order", [ $this, 'ajax_save_form_order' ] );
         add_action( "wp_ajax_{$this->prefix}save_folder_order", [ $this, 'ajax_save_folder_order' ] );
 	}
+
+    /**
+     * Filters the is_shell_page variable to include the form folders page.
+     *
+     * @param bool   $is_shell_page Whether the current page is a shell page.
+     * @param string $page The current page slug.
+     *
+     * @return bool
+     */
+    public function filter_is_shell_page( $is_shell_page, $page ) {
+        if ( $page === $this->_slug ) {
+            return true;
+        }
+
+        return $is_shell_page;
+    }
 
 	/**
 	 * Initializes the admin functionality of the plugin.
@@ -355,7 +373,7 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
         echo '<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">';
         echo '<a class="button button-primary" href="' . esc_url( $forms_page_url ) . '">Open Form Folders</a>';
         if ( $views_page_url ) {
-            echo '<a class="button" href="' . esc_url( $views_page_url ) . '">Open View Folders</a>';
+            echo '<a class="button button-primary" href="' . esc_url( $views_page_url ) . '">Open View Folders</a>';
         }
         echo '</div>';
         echo '</div>';
@@ -940,12 +958,21 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
 
 			?>
 
-			<div class="wrap">
-				<h1>Forms in Folder: <?php echo esc_html( $folder->name ); ?> </h1>
+			<?php
+			echo '<div class="wrap gops-admin">';
+			gravityops_shell()->render_header_only(
+                [
+					'slug'  => 'folders-4-gravity',
+					'title' => 'Forms in Folder: ' . $folder->name,
+				]
+            );
+			echo '<div class="gops-notices" aria-live="polite"></div>';
+			echo '<section class="gops-content">';
+			?>
 				<!--Back button-->
 				<br>
 				<a href="<?php echo esc_url( admin_url( 'admin.php?page=' . $this->_slug ) ); ?>" class="button">
-					Back to All Folders
+                    ← Back to All Folders
 				</a>
 				<br><br>
 
@@ -1056,6 +1083,7 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
 					<input type="hidden" name="nonce" value="<?php echo esc_attr( $assign_form_nonce ); ?>"> <br>
 					<button type="submit" class="button">Assign Forms</button>
 				</form>
+				</section>
             </div>
 			<?php
 		}
@@ -1102,10 +1130,16 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
         $save_folder_order_nonce = wp_create_nonce( 'save_folder_order' );
         $folders                 = $this->get_ordered_folders();
 
+        echo '<div class="wrap gops-admin">';
+        gravityops_shell()->render_header_only(
+            [
+				'slug'  => 'folders-4-gravity',
+				'title' => 'Form Folders',
+			]
+        );
+        echo '<div class="gops-notices" aria-live="polite"></div>';
+        echo '<section class="gops-content">';
         ?>
-        <div class="wrap">
-            <h1>Form Folders</h1>
-            <br>
             <ul class="gf-sortable-folders">
                 <?php
 
@@ -1143,7 +1177,7 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
                         <label for="folder_name" class="form-field-label">Create A New Folder</label><br>
                         <input type="text" id="folder_name" name="folder_name" placeholder="Folder Name" required>
                         <input type="hidden" name="nonce" value="<?php echo esc_attr( $create_folder_nonce ); ?>">
-                        <button type="submit" class="button">Create Folder</button>
+                        <button type="submit" class="button button-primary">Create Folder</button>
                     </form>
                 </div>
 
@@ -1181,6 +1215,7 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
                     </form>
                 </div>
             </div>
+        </section>
         </div>
 		<?php
 	}
