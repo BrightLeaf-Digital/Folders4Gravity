@@ -130,7 +130,18 @@ jobs:
       - name: Notify Update Feed
         if: success()
         run: |
+          # Extract the changelog entry for the current version
+          VERSION="${{ needs.get_version.outputs.version }}"
+
+          # Extract text between the current version header and the next version header (or end of file)
+          # This assumes standard WP readme.txt formatting
+          CHANGELOG=$(sed -n "/= $VERSION.*=/,/= /p" readme.txt | sed '1d;$d' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | tr '\n' ' ' | sed 's/"/\\"/g')
+
           curl -X POST ${{ secrets.UPDATE_FEED_URL }} \
             -H "X-API-Key: ${{ secrets.BLD_API_KEY }}" \
             -H "Content-Type: application/json" \
-            -d '{"item_updated": "f4g", "version": "${{ needs.get_version.outputs.version }}"}'
+            -d "{
+            \"item_updated\": \"f4g\",
+            \"version\": \"$VERSION\",
+            \"changelog\": \"$CHANGELOG\"
+          }"
