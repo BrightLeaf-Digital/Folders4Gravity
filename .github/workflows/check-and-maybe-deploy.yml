@@ -1,6 +1,10 @@
 name: Check with PCP and maybe Deploy to WordPress.org
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to deploy'
+        required: false
   push:
     paths-ignore:
       - .github/**
@@ -57,23 +61,29 @@ jobs:
         with:
           fetch-tags: true
 
-      #Get the version from the tag
-      - name: Get version from tag
+      #Get the version
+      - name: Get version
         id: get_version
         run: |
-          # Get the latest tag pointing to HEAD
-          TAG=$(git describe --tags --exact-match 2>/dev/null || echo "")
-          echo "Latest tag on HEAD: $TAG"
-          
-          # If no tag is found, skip deploy
-          if [ -z "$TAG" ]; then
-            echo "No tag on latest commit. Skipping deploy."
-            exit 0
+          VERSION="${{ github.event.inputs.version }}"
+          if [ -n "$VERSION" ]; then
+            VERSION=${VERSION#v}
+            echo "Manual version provided: $VERSION"
+          else
+            # Get the latest tag pointing to HEAD
+            TAG=$(git describe --tags --exact-match 2>/dev/null || echo "")
+            echo "Latest tag on HEAD: $TAG"
+            
+            # If no tag is found, skip deploy
+            if [ -z "$TAG" ]; then
+              echo "No tag on latest commit and no manual version provided. Skipping deploy."
+              exit 0
+            fi
+            
+            # Remove leading 'v' from the tag (if present)
+            VERSION=${TAG#v}
+            echo "Stripped version: $VERSION"
           fi
-          
-          # Remove leading 'v' from the tag (if present)
-          VERSION=${TAG#v}
-          echo "Stripped version: $VERSION"
           
           # Set output using the GITHUB_OUTPUT file
           echo "version=$VERSION" >> $GITHUB_OUTPUT
@@ -106,7 +116,7 @@ jobs:
           composer config minimum-stability stable
           composer config prefer-stable true
           CORE_VERSION=$(jq -r '.require["gravityops/core"]' composer.json)
-          composer require "gravityops/core:${CORE_VERSION}@stable" --no-dev --no-progress --optimize-autoloader --no-interaction
+          composer require "gravityops/core:${CORE_VERSION}@stable" --update-no-dev --no-progress --optimize-autoloader --no-interaction
 
       - name: Prefix namespaces (Strauss)
         run: composer prefix-namespaces
