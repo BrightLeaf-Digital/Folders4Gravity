@@ -1,11 +1,7 @@
 <?php
 
-use GravityOps\Core\Admin\ReviewPrompter;
-use GravityOps\Core\Admin\SuiteMenu;
-use GravityOps\Core\Admin\SurveyPrompter;
-use GravityOps\Core\Admin\AdminShell;
+use GravityOps\Core\SuiteCore\SuiteCore;
 use GravityOps\Core\Utils\AssetHelper as Assets;
-use function GravityOps\Core\Admin\gravityops_shell;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -111,7 +107,7 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
 
         $this->assets_helper = new Assets( plugins_url( '/', FOLDERS_4_GRAVITY_BASENAME ), dirname( __DIR__ ) );
 
-		add_filter( 'gravityops_is_shell_page', [ $this, 'filter_is_shell_page' ], 10, 2 );
+		SuiteCore::instance()->shell()->register_shell_page( $this->_slug );
 
 		parent::init();
 		$this->register_form_folders_taxonomy();
@@ -126,22 +122,6 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
         add_action( "wp_ajax_{$this->prefix}save_form_order", [ $this, 'ajax_save_form_order' ] );
         add_action( "wp_ajax_{$this->prefix}save_folder_order", [ $this, 'ajax_save_folder_order' ] );
 	}
-
-    /**
-     * Filters the is_shell_page variable to include the form folders page.
-     *
-     * @param bool   $is_shell_page Whether the current page is a shell page.
-     * @param string $page The current page slug.
-     *
-     * @return bool
-     */
-    public function filter_is_shell_page( $is_shell_page, $page ) {
-        if ( $page === $this->_slug ) {
-            return true;
-        }
-
-        return $is_shell_page;
-    }
 
 	/**
 	 * Initializes the admin functionality of the plugin.
@@ -164,7 +144,7 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
 
         $this->register_form_folders_taxonomy();
 
-        $review_prompter = new ReviewPrompter(
+        $review_prompter = SuiteCore::instance()->review_prompter(
 			$this->prefix,
 			$this->_title,
 			'https://wordpress.org/support/plugin/folders-4-gravity/reviews/#new-post'
@@ -172,7 +152,7 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
 		$review_prompter->init();
 		$review_prompter->maybe_show_review_request( $this->get_usage_count(), 10 );
 
-        $survey_prompter = new SurveyPrompter(
+        $survey_prompter = SuiteCore::instance()->survey_prompter(
 			$this->prefix,
 			$this->_title,
 			$this->_version,
@@ -182,7 +162,7 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
 
         // Register the GravityOps AdminShell page for the free Folders plugin.
         // Tabs: Overview (render), Help (render), Affiliation (external link)
-        gravityops_shell()->register_plugin_page(
+        SuiteCore::instance()->shell()->register_plugin_page(
             'folders-4-gravity',
             [
                 'title'      => $this->_title,
@@ -237,7 +217,7 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
      * @return string The base64-encoded SVG icon as a data URL.
      */
     public function get_app_menu_icon() {
-        return SuiteMenu::get_plugin_icon_url( 'folders-4-gravity' ) ?: 'dashicons-portfolio';
+        return SuiteCore::instance()->suite_menu()->get_plugin_icon_url( 'folders-4-gravity' ) ?: 'dashicons-portfolio';
     }
 
     /**
@@ -383,7 +363,7 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
      * Render: GravityOps → Folders → Help
      */
     public function gops_render_help() {
-        AdminShell::render_help_tab(
+        SuiteCore::instance()->shell()->render_help_tab(
             [
                 'Learn More'             => 'https://brightleafdigital.io/folders-4-gravity/',
                 'Docs'                   => 'https://brightleafdigital.io/folders-4-gravity/#docs',
@@ -960,7 +940,7 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
 
 			<?php
 			echo '<div class="wrap gops-admin">';
-			gravityops_shell()->render_header_only(
+			SuiteCore::instance()->shell()->render_header_only(
                 [
 					'slug'  => 'folders-4-gravity',
 					'title' => 'Forms in Folder: ' . $folder->name,
@@ -1131,7 +1111,7 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
         $folders                 = $this->get_ordered_folders();
 
         echo '<div class="wrap gops-admin">';
-        gravityops_shell()->render_header_only(
+        SuiteCore::instance()->shell()->render_header_only(
             [
 				'slug'  => 'folders-4-gravity',
 				'title' => 'Form Folders',

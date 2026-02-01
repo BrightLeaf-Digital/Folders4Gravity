@@ -1,10 +1,8 @@
 <?php
 
+use GravityOps\Core\SuiteCore\SuiteCore;
 use GravityOps\Core\Utils\AssetHelper;
-use GravityOps\Core\Admin\AdminShell;
-use GravityOps\Core\Admin\SuiteMenu;
 use GV\View;
-use function GravityOps\Core\Admin\gravityops_shell;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -110,7 +108,7 @@ class Gravity_Ops_Views_Folders extends GFAddOn {
 	public function init() {
 		parent::init();
 
-		add_filter( 'gravityops_is_shell_page', [ $this, 'filter_is_shell_page' ], 10, 2 );
+		SuiteCore::instance()->shell()->register_shell_page( $this->_slug );
 
 		$this->register_views_folders_taxonomy();
 
@@ -126,22 +124,6 @@ class Gravity_Ops_Views_Folders extends GFAddOn {
         add_action( "wp_ajax_{$this->prefix}save_view_order", [ $this, 'handle_save_view_order' ] );
         add_action( "wp_ajax_{$this->prefix}save_views_folder_order", [ $this, 'ajax_save_views_folder_order' ] );
 	}
-
-    /**
-     * Filters the is_shell_page variable to include the view folders page.
-     *
-     * @param bool   $is_shell_page Whether the current page is a shell page.
-     * @param string $page The current page slug.
-     *
-     * @return bool
-     */
-    public function filter_is_shell_page( $is_shell_page, $page ) {
-        if ( $page === $this->_slug ) {
-            return true;
-        }
-
-        return $is_shell_page;
-    }
 
 	/**
 	 * Initializes the admin functionality of the plugin.
@@ -696,7 +678,7 @@ class Gravity_Ops_Views_Folders extends GFAddOn {
 
 			<?php
 			echo '<div class="wrap gops-admin">';
-			gravityops_shell()->render_header_only(
+			SuiteCore::instance()->shell()->render_header_only(
                 [
 					'slug'  => 'folders-4-gravity',
 					'title' => 'Views in Folder: ' . $folder->name,
@@ -1069,7 +1051,7 @@ class Gravity_Ops_Views_Folders extends GFAddOn {
 		?>
 			<?php
 			echo '<div class="wrap gops-admin">';
-			gravityops_shell()->render_header_only(
+			SuiteCore::instance()->shell()->render_header_only(
                 [
 					'slug'  => 'folders-4-gravity',
 					'title' => 'View Folders',

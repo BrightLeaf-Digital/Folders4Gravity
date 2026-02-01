@@ -10,7 +10,7 @@
  * Requires PHP: 8.0
  */
 
-use function GravityOps\Core\Admin\gravityops_shell;
+use GravityOps\Core\SuiteCore\SuiteCore;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -22,11 +22,29 @@ if ( file_exists( __DIR__ . '/vendor/F4G/autoload.php' ) ) {
 	require_once __DIR__ . '/vendor/F4G/autoload.php';
 }
 
-// Instantiate this plugin's copy of the AdminShell early so provider negotiation can happen on plugins_loaded.
+// Register this plugin with SuiteCore early so the latest provider can be selected.
 add_action(
     'plugins_loaded',
     function () {
-	    gravityops_shell();
+	    if ( file_exists( __DIR__ . '/vendor/F4G/gravityops/core/assets/' ) ) {
+            $assets_base_url = plugins_url( 'vendor/F4G/gravityops/core/assets/', __FILE__ );
+        } else {
+            $assets_base_url = plugins_url( 'vendor/gravityops/core/assets/', __FILE__ );
+        }
+
+	    SuiteCore::register(
+            __FILE__,
+            [
+                'slug'            => 'folders-4-gravity',
+                'name'            => 'Folders 4 Gravity',
+                'description'     => 'Organize Gravity Forms and GravityView with folders.',
+                'marketing_url'   => 'https://brightleafdigital.io/folders-4-gravity/',
+                'docs_url'        => 'https://brightleafdigital.io/folders-4-gravity/#docs',
+                'is_free'         => true,
+                'icon_filename'   => 'f4g-icon.svg',
+                'assets_base_url' => $assets_base_url,
+            ]
+        );
     },
     1
 );
@@ -42,22 +60,6 @@ if ( function_exists( 'register_form_folders_submenu' ) ) {
 
 	return;
 }
-
-// Ensure GravityOps shared assets resolve when library is vendor-installed in this plugin.
-add_filter(
-    'gravityops_assets_base_url',
-    function ( $url ) {
-        if ( $url ) {
-            return $url;
-        }
-
-        if ( file_exists( __DIR__ . '/vendor/F4G/gravityops/core/assets/' ) ) {
-            return plugins_url( 'vendor/F4G/gravityops/core/assets/', __FILE__ );
-        }
-
-        return plugins_url( 'vendor/gravityops/core/assets/', __FILE__ );
-    }
-);
 
 add_action(
 	'gform_loaded',
