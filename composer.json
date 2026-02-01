@@ -10,15 +10,15 @@
     },
     "gravityops-remote": {
       "type": "vcs",
-      "url": "git@github.com:Eitan-brightleaf/gravityops.git",
+      "url": "git@github.com:BrightLeaf-Digital/gravityops.git",
       "no-api": true
     }
   },
   "require": {
-    "gravityops/core": "1.1.2"
+    "gravityops/core": "2.0.0"
   },
   "require-dev": {
-    "gravityops/core": "dev-main as 1.1.2"
+    "gravityops/core": "dev-main as 2.0.0"
   },
   "minimum-stability": "dev",
   "prefer-stable": true,
