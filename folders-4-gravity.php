@@ -36,7 +36,6 @@ add_action(
         }
 
 	    SuiteCore::register(
-            FOLDERS_4_GRAVITY_BASENAME,
             [
                 'assets_base_url' => $assets_base_url,
             ]
