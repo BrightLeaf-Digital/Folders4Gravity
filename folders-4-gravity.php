@@ -16,6 +16,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+define( 'FOLDERS_4_GRAVITY_VERSION', '1.0.8' );
+define( 'FOLDERS_4_GRAVITY_BASENAME', plugin_basename( __FILE__ ) );
+
 require_once __DIR__ . '/vendor/autoload.php';
 
 if ( file_exists( __DIR__ . '/vendor/F4G/autoload.php' ) ) {
@@ -33,15 +36,8 @@ add_action(
         }
 
 	    SuiteCore::register(
-            __FILE__,
+            FOLDERS_4_GRAVITY_BASENAME,
             [
-                'slug'            => 'folders-4-gravity',
-                'name'            => 'Folders 4 Gravity',
-                'description'     => 'Organize Gravity Forms and GravityView with folders.',
-                'marketing_url'   => 'https://brightleafdigital.io/folders-4-gravity/',
-                'docs_url'        => 'https://brightleafdigital.io/folders-4-gravity/#docs',
-                'is_free'         => true,
-                'icon_filename'   => 'f4g-icon.svg',
                 'assets_base_url' => $assets_base_url,
             ]
         );
@@ -78,9 +74,6 @@ add_action(
 		}
 	}
 );
-
-define( 'FOLDERS_4_GRAVITY_VERSION', '1.0.8' );
-define( 'FOLDERS_4_GRAVITY_BASENAME', plugin_basename( __FILE__ ) );
 
 /**
  * Returns the instance of the Form_Folders class.
