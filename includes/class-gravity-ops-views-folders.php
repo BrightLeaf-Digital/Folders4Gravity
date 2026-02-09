@@ -523,6 +523,8 @@ class Gravity_Ops_Views_Folders extends GFAddOn {
 	 * @return void
 	 */
 	public function uninstall() {
+		parent::uninstall();
+
 		// Get all views
 		$views = get_posts(
 			[
@@ -551,6 +553,8 @@ class Gravity_Ops_Views_Folders extends GFAddOn {
 				wp_delete_term( $folder, $this->taxonomy_name );
 			}
 		}
+
+		delete_option( "{$this->prefix}views_folder_order" );
 	}
 
 	/**

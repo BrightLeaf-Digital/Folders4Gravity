@@ -621,6 +621,7 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
      * @return void
      */
     public function uninstall() {
+		parent::uninstall();
 
         $forms = GFAPI::get_forms();
         foreach ( $forms as $form ) {
@@ -641,6 +642,10 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
 				wp_delete_term( $folder, $this->taxonomy_name );
 			}
 		}
+
+		delete_option( "{$this->prefix}folder_order" );
+		delete_option( "{$this->prefix}review_prompter_usage_count" );
+		delete_option( "{$this->prefix}survey_status" );
     }
 
     /**
