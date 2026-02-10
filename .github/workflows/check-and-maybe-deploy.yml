@@ -6,10 +6,8 @@ on:
         description: 'Version to deploy'
         required: false
   push:
-    paths-ignore:
-      - .github/**
-    branches:
-      - main
+    tags:
+      - '*'
 jobs:
   pcp:
     runs-on: ubuntu-latest
