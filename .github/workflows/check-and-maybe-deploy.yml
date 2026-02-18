@@ -53,38 +53,28 @@ jobs:
     outputs:
       version: ${{ steps.get_version.outputs.version }}
     steps:
-      # Checkout the repository
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-tags: true
-
       #Get the version
       - name: Get version
         id: get_version
         run: |
-          VERSION="${{ github.event.inputs.version }}"
-          if [ -n "$VERSION" ]; then
-            VERSION=${VERSION#v}
-            echo "Manual version provided: $VERSION"
-          else
-            # Get the latest tag pointing to HEAD
-            TAG=$(git describe --tags --exact-match 2>/dev/null || echo "")
-            echo "Latest tag on HEAD: $TAG"
-            
-            # If no tag is found, skip deploy
-            if [ -z "$TAG" ]; then
-              echo "No tag on latest commit and no manual version provided. Skipping deploy."
-              exit 0
-            fi
-            
-            # Remove leading 'v' from the tag (if present)
-            VERSION=${TAG#v}
-            echo "Stripped version: $VERSION"
+          # Prefer manual input if provided
+          INPUT_VERSION="${{ inputs.version }}"
+          if [ -n "$INPUT_VERSION" ]; then
+            VERSION="${INPUT_VERSION#v}"
+            echo "Using manual input version: $VERSION"
+            echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
-          
-          # Set output using the GITHUB_OUTPUT file
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+          # If the workflow is running on a tag, this is the tag name (e.g. v1.3.8)
+          if [ "${{ github.ref_type }}" != "tag" ]; then
+            echo "Not a tag run. Skipping."
+            exit 0
+          fi
+
+          TAG="${{ github.ref_name }}"
+          VERSION="${TAG#v}"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
   maybe_deploy:
     needs: get_version
     if: ${{ needs.get_version.outputs.version && needs.get_version.outputs.version != '' }}
