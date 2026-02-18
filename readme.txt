@@ -3,7 +3,7 @@ Contributors: eitanatbrightleaf
 Tags: gravity forms, folders, admin tools, organization, gravityview
 Requires at least: 6.5
 Tested up to: 6.9
-Stable tag: 1.0.8
+Stable tag: 1.0.9
 Requires PHP: 8.0
 License: GPLv2
 License URI: https://brightleafdigital.io/folders-4-gravity/
@@ -154,6 +154,11 @@ Yes. Folders4Gravity is intentionally lightweight, fast, and optimized for large
 
 == Changelog ==
 
+= 1.0.9 =
+- Updated dependencies
+- Fixed uninstall process to properly clear everything
+- Updated core GravityOps library to improve the update plugin process among other small fixes
+
 = 1.0.8 =
 - Improved styling and UI to match branding
 - Bumped version of core GravityOps library to fix some bugs regarding the plugin admin menus and integrate [TrustedLogin](https://www.trustedlogin.com/about/easy-and-safe/)
@@ -166,10 +171,6 @@ Yes. Folders4Gravity is intentionally lightweight, fast, and optimized for large
 
 = 1.0.5 =
 - Updated plugin menu
-
-= 1.0.4 =
-- Updated plugin name
-- Updated readme
 
 
 == Upgrade Notice ==

@@ -15,10 +15,10 @@
     }
   },
   "require": {
-    "gravityops/core": "2.0.0"
+    "gravityops/core": "2.0.1"
   },
   "require-dev": {
-    "gravityops/core": "dev-main as 2.0.0"
+    "gravityops/core": "dev-main as 2.0.1"
   },
   "minimum-stability": "dev",
   "prefer-stable": true,
