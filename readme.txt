@@ -142,7 +142,7 @@ Yes. You can copy the form shortcode directly from the folder view for faster im
 No—placing forms or views in folders is optional. Unassigned items remain visible in the default list until you move them.
 
 ### Does deleting a folder delete my forms or views?
-No. Deleting a folder only removes the folder container. All your forms and views remain untouched and return to the main list.
+No, deleting a folder does not delete your forms or views. However, you can only delete empty folders. You must first remove or move all items within a folder before it can be deleted. Once the folder is empty, the delete option will become available. All forms and views always remain accessible in the main Gravity Forms and GravityView lists.
 
 ### Is this plugin lightweight?
 Yes. Folders4Gravity is intentionally lightweight, fast, and optimized for large and complex Gravity Forms setups.

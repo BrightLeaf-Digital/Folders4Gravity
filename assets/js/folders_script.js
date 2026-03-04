@@ -60,19 +60,23 @@ jQuery(($) => {
 	});
 
 	$('.update-form').on('click', function () {
-		const action = $(this).data('action');
-		const formID = $(this).data('form-id');
-		const nonce = $(this).data('nonce');
-
 		// Show confirmation dialog for trash action
 		if (action === 'go_f4g_trash_form') {
-			if (!confirm('Are you sure you want to trash this form? This action can be undone from the Gravity Forms trash.')) {
+			if (
+				!confirm(
+					'Are you sure you want to trash this form? This action can be undone from the Gravity Forms trash.'
+				)
+			) {
 				return;
 			}
 		}
 
 		const urlParams = new URLSearchParams(window.location.search);
 		const folderID = urlParams.get('folder_id'); // could be null
+
+		const action = $(this).data('action');
+		const formID = $(this).data('form-id');
+		const nonce = $(this).data('nonce');
 
 		makeAjaxRequest({
 			action,
@@ -85,7 +89,7 @@ jQuery(($) => {
 	$('.copyable').on('click', function () {
 		const $el = $(this);
 		navigator.clipboard
-			.writeText($el.html())
+			.writeText($el.text().trim())
 			.then(() => {
 				$el.css('background-color', '#d4edda'); // success green
 				setTimeout(() => {

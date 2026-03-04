@@ -1,5 +1,12 @@
 # Getting Started with Folders
 
+### Step 0: Overview and Help
+
+Before you begin, you can find a high-level overview of your organized and unfiled forms and views by navigating to:
+- **GravityOps → Folders4Gravity → Overview**
+
+This page provides counts of filed vs. unfiled items and quick links to the management screens.
+
 ### Step 1: Create Your First Folder
 
 1.  **Navigate to**:
@@ -22,6 +29,14 @@ Now, you have an empty folder ready for organizing your forms or views.
     dropdown.
 4.  Click the **Assign Form(s)** or **Assign View(s)** button.
 5.  Alternatively navigate into the folder and assign from there.
+
+### Managing Unfiled Items
+
+Any forms or views that are not yet assigned to a folder are considered "unfiled." You can manage these directly from the main **Form Folders** or **View Folders** management screens:
+
+1.  Look for the **Assign Form(s) to a Folder** widget on the management page.
+2.  The dropdown will list all forms/views that are currently available for assignment.
+3.  Selecting items and assigning them to a folder will instantly move them out of the "unfiled" pool and into your chosen structure.
 
 Your forms/views are now placed into the folder, and the folder’s item
 count will update next to its name.

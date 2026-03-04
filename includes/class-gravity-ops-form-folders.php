@@ -2,6 +2,8 @@
 
 use GravityOps\Core\SuiteCore\SuiteCore;
 use GravityOps\Core\Utils\AssetHelper as Assets;
+use GWiz_GF_Dev_Tools\Modules\Module_Manager;
+use GWiz_GF_Dev_Tools\Modules\PreviewTools\Admin;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -1021,9 +1023,7 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
                                         </td>
                                         <!--Shortcode-->
                                         <td>
-                                            <code class="copyable">
-                                                [gravityform id="<?php echo esc_attr( $form['id'] ); ?>" title="false" description="false"]
-                                            </code>
+                                            <code class="copyable">[gravityform id="<?php echo esc_attr( $form['id'] ); ?>" title="false" description="false"]</code>
                                         </td>
                                         <!--Links-->
 								            <?php $this->render_links_td_section( $form, $allowed_svg_tags, $combined_allowed_html ); ?>
@@ -1322,14 +1322,27 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
      * @return void
      */
 	private function maybe_render_live_preview_link( array $form ) {
-		if ( ! class_exists( 'GP_Live_Preview' ) ) {
-			return;
-		}
+		$preview_url = '';
+		$label       = 'Live Preview';
+
+		if ( class_exists( 'GP_Live_Preview' ) ) {
 			$gp_live_preview = GP_Live_Preview::get_instance();
 			$preview_url     = $gp_live_preview->add_options_to_url( $gp_live_preview->get_preview_url( $form['id'] ) );
+		} elseif ( class_exists( 'GWiz_GF_Dev_Tools' ) && class_exists( 'GWiz_GF_Dev_Tools\Modules\Module_Manager' ) ) {
+			if ( Module_Manager::is_module_enabled( 'preview-tools' ) ) {
+				$preview_tools_admin = Admin::get_instance();
+				$preview_url         = $preview_tools_admin->add_options_to_url( $preview_tools_admin->get_preview_url( $form['id'] ) );
+			}
+		}
+
+		if ( empty( $preview_url ) ) {
+			$preview_url = trailingslashit( site_url() ) . '?gf_page=preview&id=' . $form['id'];
+			$label       = 'Preview';
+		}
+
 		?>
-			| <a href="<?php echo esc_url( $preview_url ); ?>" target="_blank">Live Preview</a>
-			<?php
+			| <a href="<?php echo esc_url( $preview_url ); ?>" target="_blank"><?php echo esc_html( $label ); ?></a>
+		<?php
 	}
     /**
      * Creates a dropdown of all views connected to the form or a create view link

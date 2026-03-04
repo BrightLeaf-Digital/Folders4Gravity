@@ -733,21 +733,21 @@ class Gravity_Ops_Views_Folders extends GFAddOn {
 									<!--Shortcode-->
 									<td>
 										<code class="copyable">
-											<?php
+                                        <?php
 											// Check if GVCommon class exists and get the secret if available
-											if ( class_exists( 'GVCommon' ) ) {
-												$view_obj = View::by_id( $view->ID );
-												$secret   = $view_obj?->get_validation_secret();
-												if ( $secret ) {
-													echo '[gravityview id="' . esc_attr( $view->ID ) . '" secret="' . esc_attr( $secret ) . '"]';
-												} else {
-													echo '[gravityview id="' . esc_attr( $view->ID ) . '"]';
-												}
+										if ( class_exists( 'GVCommon' ) ) {
+											$view_obj = View::by_id( $view->ID );
+											$secret   = $view_obj?->get_validation_secret();
+											if ( $secret ) {
+												echo '[gravityview id="' . esc_attr( $view->ID ) . '" secret="' . esc_attr( $secret ) . '"]';
 											} else {
 												echo '[gravityview id="' . esc_attr( $view->ID ) . '"]';
 											}
-											?>
-										</code>
+										} else {
+											echo '[gravityview id="' . esc_attr( $view->ID ) . '"]';
+										}
+										?>
+                                            </code>
 									</td>
 									<!--Links-->
 									<?php $this->render_links_td_section( $view, $form_id, $form ); ?>
