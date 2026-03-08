@@ -9,137 +9,18 @@ on:
     tags:
       - '*'
 jobs:
-  pcp:
-    runs-on: ubuntu-latest
-    steps:
-      # Checkout the repository
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      # Setup PHP
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.3'
-          tools: composer
-
-      - name: Setup SSH Agent
-        uses: webfactory/ssh-agent@v0.8.0
-        with:
-            ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY_GRAVITYOPS_CORE }}
-
-      # Clean up config and resolve correct tag dynamically
-      - name: Prepare Composer for production
-        run: |
-          composer config repositories.gravityops-local --unset
-          composer config minimum-stability stable
-          composer config prefer-stable true
-          CORE_VERSION=$(jq -r '.require["gravityops/core"]' composer.json)
-          composer require "gravityops/core:${CORE_VERSION}@stable" --update-no-dev --no-progress --optimize-autoloader --no-interaction
-
-      - name: Prefix namespaces (Strauss)
-        run: composer prefix-namespaces
-
-      # Run PCP check
-      - name: PCP
-        uses: wordpress/plugin-check-action@v1
-        with:
-          exclude-files: |
-            .gitignore
-            .wp-env.json
-  get_version:
-    needs: pcp
-    runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.get_version.outputs.version }}
-    steps:
-      #Get the version
-      - name: Get version
-        id: get_version
-        run: |
-          # Prefer manual input if provided
-          INPUT_VERSION="${{ inputs.version }}"
-          if [ -n "$INPUT_VERSION" ]; then
-            VERSION="${INPUT_VERSION#v}"
-            echo "Using manual input version: $VERSION"
-            echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          # If the workflow is running on a tag, this is the tag name (e.g. v1.3.8)
-          if [ "${{ github.ref_type }}" != "tag" ]; then
-            echo "Not a tag run. Skipping."
-            exit 0
-          fi
-
-          TAG="${{ github.ref_name }}"
-          VERSION="${TAG#v}"
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-  maybe_deploy:
-    needs: get_version
-    if: ${{ needs.get_version.outputs.version && needs.get_version.outputs.version != '' }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      # --- ADDED: Setup PHP for this job too ---
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.0'
-          tools: composer
-
-      # --- ADDED: Setup SSH Agent ---
-      - name: Setup SSH Agent
-        uses: webfactory/ssh-agent@v0.8.0
-        with:
-            ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY_GRAVITYOPS_CORE }}
-
-
-      # Clean up config and resolve correct tag dynamically
-      - name: Prepare Composer for production
-        run: |
-          composer config repositories.gravityops-local --unset
-          composer config minimum-stability stable
-          composer config prefer-stable true
-          CORE_VERSION=$(jq -r '.require["gravityops/core"]' composer.json)
-          composer require "gravityops/core:${CORE_VERSION}@stable" --update-no-dev --no-progress --optimize-autoloader --no-interaction
-
-      - name: Prefix namespaces (Strauss)
-        run: composer prefix-namespaces
-
-      # Create a clean build directory.
-      # This preserves the 'vendor' folder we just built with the SSH key.
-      - name: Prepare Build Directory
-        run: |
-          mkdir svn-build
-          rsync -av --exclude='.git' --exclude='.github' --exclude='svn-build' --exclude='composer.json' --exclude='composer.lock' --exclude='.gitignore' . svn-build/
-
-      - name: WordPress Plugin Deploy
-        uses: 10up/action-wordpress-plugin-deploy@stable
-        env:
-          SLUG: folders-4-gravity
-          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
-          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
-          VERSION: ${{ needs.get_version.outputs.version }}
-          BUILD_DIR: svn-build
-
-      - name: Notify Update Feed
-        if: success()
-        run: |
-          # Extract the changelog entry for the current version
-          VERSION="${{ needs.get_version.outputs.version }}"
-
-          # Extract text between the current version header and the next version header (or end of file)
-          # This assumes standard WP readme.txt formatting
-          CHANGELOG=$(sed -n "/= $VERSION.*=/,/= /p" readme.txt | sed '1d;$d' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | tr '\n' ' ' | sed 's/"/\\"/g')
-
-          curl -X POST ${{ secrets.UPDATE_FEED_URL }} \
-            -H "X-API-Key: ${{ secrets.BLD_API_KEY }}" \
-            -H "Content-Type: application/json" \
-            -d "{
-            \"item_updated\": \"f4g\",
-            \"version\": \"$VERSION\",
-            \"changelog\": \"$CHANGELOG\"
-          }"
+  trigger-workflow:
+    uses: BrightLeaf-Digital/.github/.github/workflows/pcp-check.yml@main
+    with:
+      plugin_slug: 'folders-4-gravity'
+      deploy_to_wp: true
+      deploy_to_freemius: false
+      update_feed_item_key: 'f4g'
+      version: ${{ github.event.inputs.version }}
+      zip_files: 'assets docs includes vendor *.php readme.txt'
+    secrets:
+      BLD_API_KEY: ${{ secrets.BLD_API_KEY }}
+      UPDATE_FEED_URL: ${{ secrets.UPDATE_FEED_URL }}
+      WP_SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+      WP_SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+      SSH_PRIVATE_KEY_GRAVITYOPS_CORE: ${{ secrets.SSH_PRIVATE_KEY_GRAVITYOPS_CORE }}
