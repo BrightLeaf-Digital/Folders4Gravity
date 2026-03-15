@@ -17,7 +17,7 @@ jobs:
       deploy_to_freemius: false
       update_feed_item_key: 'f4g'
       version: ${{ github.event.inputs.version }}
-      zip_files: 'assets docs includes vendor *.php readme.txt'
+      zip_files: 'assets includes vendor *.php readme.txt composer.json'
     secrets:
       BLD_API_KEY: ${{ secrets.BLD_API_KEY }}
       UPDATE_FEED_URL: ${{ secrets.UPDATE_FEED_URL }}
