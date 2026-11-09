@@ -152,6 +152,12 @@ Yes. Folders4Gravity is intentionally lightweight, fast, and optimized for large
 2. Inside a Form Folder, showing organized Gravity Forms with drag-and-drop ordering and bulk assignment tools.
 3. Inside a View Folder, displaying GravityView Views grouped by project or workflow with full folder navigation controls.
 
+== Community Help ==
+
+For how-to questions and examples of what others have built, visit the [GravityOps Help community](https://brightleafdigital.io/community/gravityops-help/).
+
+If you opened a support thread on WordPress.org, continue that conversation there. The community is an additional place for help and ideas.
+
 == Changelog ==
 
 = 1.1.2 | Oct 11, 2026 =
