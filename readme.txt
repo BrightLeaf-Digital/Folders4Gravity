@@ -3,7 +3,7 @@ Contributors: eitanatbrightleaf
 Tags: gravityforms, gravity-forms, folders, admin tools, gravityview
 Requires at least: 6.5
 Tested up to: 7.1
-Stable tag: 1.1.2
+Stable tag: 1.1.3
 Requires PHP: 8.0
 License: GPLv2
 License URI: https://brightleafdigital.io/folders-4-gravity/
@@ -173,6 +173,11 @@ BrightLeaf Digital: [Privacy Policy](https://brightleafdigital.io/privacy/). Tru
 
 == Changelog ==
 
+= 1.1.3 | Nov 10, 2026 =
+- Added a Community Help section to the readme pointing to the GravityOps Help community.
+- Added an External services section to this readme describing when the plugin connects to outside services.
+- Updated the GravityOps shared library: the GravityOps dashboard now gets its product list, categories, links and announcements from BrightLeaf Digital's signed online catalog, so new tools appear without a plugin update. Free versions offer an optional GravityOps Weekly newsletter signup, seasonal offers can appear on the plugin's settings screen, and updating from the dashboard keeps a network-activated plugin network-active. Code Snippet Manager now appears on the dashboard, and premium updates explain when a license is required.
+
 = 1.1.2 | Oct 11, 2026 =
 - Tested with WordPress 7.1.
 - Updated the GravityOps shared library to 2.0.11, bringing a consistent Feeds screen across the suite, more reliable feed activation toggles and feed links, the Docs tab placed before Help, dashboard links that open in a new tab, and updated third-party components.
@@ -194,11 +199,6 @@ BrightLeaf Digital: [Privacy Policy](https://brightleafdigital.io/privacy/). Tru
 
 = 1.0.9.1 | Feb 19, 2026 =
 - Fixed a bug showing update versions for uninstalled plugins.
-
-= 1.0.9 =
-- Updated dependencies
-- Fixed uninstall process to properly clear everything
-- Updated core GravityOps library to improve the update plugin process among other small fixes
 
 == Upgrade Notice ==
 Adds confirmation before trashing forms or views and allows re-organizing folders. Update now for improved safety and smoother folder management.
