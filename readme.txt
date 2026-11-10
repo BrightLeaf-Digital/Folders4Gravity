@@ -158,6 +158,19 @@ For how-to questions and examples of what others have built, visit the [GravityO
 
 If you opened a support thread on WordPress.org, continue that conversation there. The community is an additional place for help and ideas.
 
+== External services ==
+
+This plugin works entirely on your site. Your forms, views and folders are never sent anywhere.
+
+The plugin connects to outside services only in these cases:
+
+- **GravityOps product catalog.** When an administrator uses the WordPress admin (or shortly afterwards, through WP-Cron), the shared GravityOps library downloads the GravityOps product catalog (names, versions, icons, links and announcements) from brightleafdigital.io, at most about twice a day. The request sends no personal data or site content; like any web request, it reveals your server's IP address.
+- **Newsletter signup.** Only if you choose to subscribe to GravityOps Weekly, the email address you enter is sent to brightleafdigital.io.
+- **Feedback prompts.** Only if you choose to answer the short GravityOps survey or open the review prompt, your answers, or the plugin and version being reviewed, are sent to brightleafdigital.io.
+- **Support access.** Only if you grant BrightLeaf Digital support access, TrustedLogin creates a temporary login and notifies BrightLeaf Digital through TrustedLogin and brightleafdigital.io.
+
+BrightLeaf Digital: [Privacy Policy](https://brightleafdigital.io/privacy/). TrustedLogin: [Authorized User Terms](https://www.trustedlogin.com/authorized-user-terms/), [Privacy Policy](https://www.trustedlogin.com/privacy-policy/).
+
 == Changelog ==
 
 = 1.1.2 | Oct 11, 2026 =
