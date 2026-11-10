@@ -12,7 +12,8 @@ jobs:
   assets:
     uses: BrightLeaf-Digital/.github/.github/workflows/wporg-assets.yml@main
     with:
-      plugin_slug: 'folders-4-gravity'
+      product_id: 'f4g'
     secrets:
+      BLD_API_KEY: ${{ secrets.BLD_API_KEY }}
       WP_SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
       WP_SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}

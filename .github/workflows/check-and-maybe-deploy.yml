@@ -12,15 +12,11 @@ jobs:
   trigger-workflow:
     uses: BrightLeaf-Digital/.github/.github/workflows/deploy.yml@main
     with:
-      deploy_to_wp: true
-      deploy_to_freemius: false
-      plugin_slug: 'folders-4-gravity'
-      update_feed_item_key: 'f4g'
+      product_id: 'f4g'
       version: ${{ github.event.inputs.version }}
       zip_files: 'assets docs includes vendor *.php readme.txt composer.json'
     secrets:
       BLD_API_KEY: ${{ secrets.BLD_API_KEY }}
-      UPDATE_FEED_URL: ${{ secrets.UPDATE_FEED_URL }}
       WP_SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
       WP_SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
       SSH_PRIVATE_KEY_GRAVITYOPS_CORE: ${{ secrets.SSH_PRIVATE_KEY_GRAVITYOPS_CORE }}
