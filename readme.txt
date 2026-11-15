@@ -8,10 +8,12 @@ Requires PHP: 8.0
 License: GPLv2
 License URI: https://brightleafdigital.io/folders-4-gravity/
 
-Organize Gravity Forms and Views with flexible drag-and-drop folders. Reduce admin clutter, streamline workflows, and keep your workspace tidy.
+Organize Gravity Forms forms and GravityView views into folders you can reorder by drag and drop, for sites with dozens or hundreds of forms.
 
 == Description ==
 Folders4Gravity brings a powerful, intuitive folder system to your Gravity Forms and GravityView dashboards. Quickly organize forms and views into clean, structured folders with drag-and-drop ordering, bulk assignment, and a streamlined workspace that eliminates admin clutter and accelerates your workflow.
+
+From the makers of [GravityOps](https://brightleafdigital.io/).
 
 ## Description
 
@@ -26,7 +28,7 @@ Folders4Gravity is ideal for agencies, internal teams, operations managers, nonp
 - Create, rename, reorder, and delete folders for Gravity Forms
 - Create, rename, reorder, and delete folders for GravityView
 - Drag-and-drop folder ordering
-- Drag-and-drop item ordering inside folders
+- Drag-and-drop ordering of forms and views inside a folder
 - Bulk assignment of forms to folders
 - Bulk assignment of views to folders
 - Separate folder structures for Forms and Views
@@ -92,65 +94,65 @@ Folders4Gravity is built to reduce friction and accelerate daily admin tasks:
 Folders4Gravity gives Gravity Forms and GravityView the structured folder system they’ve always needed. With fast drag-and-drop organization, bulk assignment, and a streamlined admin workspace, it brings clarity, structure, and efficiency to any site using Gravity Forms at scale. If your dashboard is crowded with forms and views, this plugin is the clean organizational layer you’ve been missing.
 
 == Installation ==
-1. Upload the `folders4gravity` plugin folder to the `/wp-content/plugins/` directory, or install the plugin through the WordPress Plugins screen.
+1. Upload the `folders-4-gravity` plugin folder to the `/wp-content/plugins/` directory, or install the plugin through the WordPress Plugins screen.
 2. Activate the plugin through the **Plugins** menu in WordPress.
 3. Go to **Forms → Form Folders** to begin creating folders and organizing your Gravity Forms.
 4. If you have GravityView installed, go to **GravityKit → View Folders** to organize your Views.
-5. Start creating folders and assigning forms or views using drag-and-drop or bulk actions.
+5. Create folders, assign forms or views to them (one or many at a time), then drag folders and items into the order you want.
 
 == Frequently Asked Questions ==
-### Does Folders4Gravity change anything about how my forms or views work?
+= Does Folders4Gravity change anything about how my forms or views work? =
 No. Folders4Gravity is 100% admin-side only. It does not modify form settings, IDs, entries, confirmations, notifications, or front-end display. It simply provides a clean, structured folder interface to organize Gravity Forms and GravityView items.
 
-### How do I create my first folder?
-After activating the plugin, go to **Forms → Form Folders** or **GravityKit → View Folders** (if GravityView is installed). Click “Add Folder,” name it, and start dragging your forms or views into place. You can also bulk-assign items to new or existing folders.
+= How do I create my first folder? =
+After activating the plugin, go to **Forms → Form Folders** or **GravityKit → View Folders** (if GravityView is installed). Enter a name under “Create A New Folder” and click “Create Folder.” Then use “Assign Form(s) to a Folder” (or “Assign View(s) to a Folder”) to pick one or more items and the folder to put them in.
 
-### Can I drag and drop forms into folders?
-Yes. Drag-and-drop is fully supported for both folders and items. You can reorder folders, reorder the forms inside them, and reorganize your workspace instantly.
+= Can I drag and drop forms into folders? =
+Drag and drop is for ordering: you can drag folders into the order you want, and drag forms or views into order inside a folder. To put items into a folder, select them in the assign list (hold Ctrl or Cmd to pick several) and choose the folder.
 
-### Can I bulk assign multiple forms or views to a folder?
-Yes. Use the bulk selector to choose several items at once and assign them to a folder with a single action. This works for both Gravity Forms and GravityView Views.
+= Can I bulk assign multiple forms or views to a folder? =
+Yes. Use the multi-select list to choose several items at once and assign them to a folder with a single action. This works for both Gravity Forms and GravityView Views.
 
-### Does Folders4Gravity support GravityView?
+= Does Folders4Gravity support GravityView? =
 Yes. If GravityView is installed, the plugin automatically adds a parallel folder system under **GravityKit → View Folders** so you can organize Views by project, workflow, client, or campaign without any setup.
 
-### Will this help me manage a large number of forms?
+= Will this help me manage a large number of forms? =
 Absolutely. Folders4Gravity is designed for sites with large Gravity Forms libraries, multi-team environments, agencies, and multisite installations. It reduces admin clutter, speeds up navigation, and provides a structured dashboard for high-volume form management.
 
-### Can I reorder folders and items?
+= Can I reorder folders and items? =
 Yes. Both folders and the items inside them support drag-and-drop ordering. You can maintain a custom hierarchy that mirrors your organizational structure—client, project, department, or workflow.
 
-### Will this help organize GravityView Views for client or project work?
+= Will this help organize GravityView Views for client or project work? =
 Yes. You can group Views by client, project, team, or campaign, making it much easier to navigate complex GravityView setups.
 
-### Does this plugin affect front-end performance?
+= Does this plugin affect front-end performance? =
 No. All folder operations occur in the WordPress admin and do not affect front-end performance or user-facing behavior.
 
-### Does this plugin require configuration?
+= Does this plugin require configuration? =
 No configuration is required. Install, activate, and start creating folders immediately. Folders4Gravity integrates seamlessly with the existing Gravity Forms and GravityView admin pages.
 
-### Will Folders4Gravity work on a multisite?
+= Will Folders4Gravity work on a multisite? =
 Yes. It improves form and view organization across multisite environments and is lightweight enough for large networks.
 
-### Is this plugin useful for agencies or internal operations teams?
+= Is this plugin useful for agencies or internal operations teams? =
 Yes. Agencies and internal teams benefit from folder-based organization that reduces clutter, supports multi-team workflows, and keeps form structures clear for everyone involved.
 
-### Does it support one-click shortcode copying?
-Yes. You can copy the form shortcode directly from the folder view for faster implementation in your WordPress pages.
+= Does it support one-click shortcode copying? =
+Yes. Inside a folder, click a form's or view's shortcode to copy it, ready to paste into a page.
 
-### Does each item have to belong to a folder?
-No—placing forms or views in folders is optional. Unassigned items remain visible in the default list until you move them.
+= Does each item have to belong to a folder? =
+No. Placing forms or views in folders is optional. Every form and view stays in the standard Gravity Forms and GravityView lists, and unassigned items are listed in the assign selector until you place them in a folder.
 
-### Does deleting a folder delete my forms or views?
+= Does deleting a folder delete my forms or views? =
 No, deleting a folder does not delete your forms or views. However, you can only delete empty folders. You must first remove or move all items within a folder before it can be deleted. Once the folder is empty, the delete option will become available. All forms and views always remain accessible in the main Gravity Forms and GravityView lists.
 
-### Is this plugin lightweight?
+= Is this plugin lightweight? =
 Yes. Folders4Gravity is intentionally lightweight, fast, and optimized for large and complex Gravity Forms setups.
 
 == Screenshots ==
-1. Form Folders and View Folders dashboard widgets for quick access directly from the WordPress admin home screen.
-2. Inside a Form Folder, showing organized Gravity Forms with drag-and-drop ordering and bulk assignment tools.
-3. Inside a View Folder, displaying GravityView Views grouped by project or workflow with full folder navigation controls.
+1. Organize Gravity Forms into folders on the Form Folders screen
+2. Reorder forms inside a Gravity Forms folder by drag and drop, with shortcodes and entry, settings and preview links
+3. Organize GravityView views into folders on the View Folders screen
 
 == Community Help ==
 

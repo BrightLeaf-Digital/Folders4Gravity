@@ -8,6 +8,7 @@ If you have thoughts about these items — or want to suggest something else —
 
 ## Organizing
 
+- **Drag into folders** — drag forms and views onto a folder to add them, instead of picking them from a list.
 - **Move between folders** — move a form or view straight from one folder to another, without removing it first.
 - **Nested folders** — create folders inside folders for larger form and view libraries.
 - **Labels** — tag forms and views with labels, so one item can be grouped several ways at once.
