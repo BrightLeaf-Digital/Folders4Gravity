@@ -3,7 +3,7 @@ Contributors: eitanatbrightleaf
 Tags: gravityforms, gravity-forms, folders, admin tools, gravityview
 Requires at least: 6.5
 Tested up to: 7.1
-Stable tag: 1.1.3
+Stable tag: 1.1.4
 Requires PHP: 8.0
 License: GPLv2
 License URI: https://brightleafdigital.io/folders-4-gravity/
@@ -175,6 +175,11 @@ BrightLeaf Digital: [Privacy Policy](https://brightleafdigital.io/privacy/). Tru
 
 == Changelog ==
 
+= 1.1.4 | Nov 15, 2026 =
+- Rewrote the plugin description, FAQ and installation steps for WordPress.org and added screenshots. The docs now say correctly that forms and views are added to a folder from a list, and drag and drop sets their order.
+- Uninstalling the plugin now also removes the review request's saved settings.
+- Updated the GravityOps shared library: the one-time request to rate the plugin can now also appear after two weeks of use, not only after heavy use. Dismissing it still stops it for good.
+
 = 1.1.3 | Nov 10, 2026 =
 - Added a Community Help section to the readme pointing to the GravityOps Help community.
 - Added an External services section to this readme describing when the plugin connects to outside services.
@@ -198,9 +203,6 @@ BrightLeaf Digital: [Privacy Policy](https://brightleafdigital.io/privacy/). Tru
 - Improved the GravityOps dashboard with per-plugin icons, correct changelog links, update checks that no longer hold up the page, and a fix for opening a plugin right after activating it.
 - Individual plugin pages are no longer listed in the WordPress admin sidebar; open them from the GravityOps dashboard instead.
 - Updated the core GravityOps library for more reliable support access, interface fixes that are no longer served from a stale cache, and other small fixes.
-
-= 1.0.9.1 | Feb 19, 2026 =
-- Fixed a bug showing update versions for uninstalled plugins.
 
 == Upgrade Notice ==
 Adds confirmation before trashing forms or views and allows re-organizing folders. Update now for improved safety and smoother folder management.
