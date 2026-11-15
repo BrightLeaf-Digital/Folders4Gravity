@@ -643,6 +643,8 @@ class Gravity_Ops_Form_Folders extends GFAddOn {
 
 		delete_option( "{$this->prefix}folder_order" );
 		delete_option( "{$this->prefix}review_prompter_usage_count" );
+		delete_option( "{$this->prefix}rating_asked" );
+		delete_option( "{$this->prefix}review_started_at" );
     }
 
     /**
