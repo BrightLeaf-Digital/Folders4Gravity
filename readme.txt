@@ -2,7 +2,7 @@
 Contributors: eitanatbrightleaf
 Tags: gravityforms, gravity-forms, folders, admin tools, gravityview
 Requires at least: 6.5
-Tested up to: 7.1
+Tested up to: 7.2
 Stable tag: 1.1.4
 Requires PHP: 8.0
 License: GPLv2
